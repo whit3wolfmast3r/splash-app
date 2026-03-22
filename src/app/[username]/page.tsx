@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
-import { supabase } from '@/utils/supabase';
-import SplashPage from '@/components/SplashPage';
+import { supabase } from '../../utils/supabase';
+import SplashPage from '../../components/SplashPage';
 import { notFound } from 'next/navigation';
 
 // We added 'Promise' here to satisfy the new Next.js 15 rules
