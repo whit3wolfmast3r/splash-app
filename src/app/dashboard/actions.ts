@@ -1,9 +1,16 @@
+'use server'
+
+import { createClient } from '@/utils/supabase/server'
+import { revalidatePath } from 'next/cache'
+
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
 
+  // 1. Get the current user
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  // 2. Prepare the data from the form
   const updates = {
     agent_name: formData.get('agent_name') as string,
     username: (formData.get('username') as string).toLowerCase().replace(/\s+/g, '-'),
@@ -11,17 +18,15 @@ export async function updateProfile(formData: FormData) {
     cta_text: formData.get('cta_text') as string,
     cta_url: formData.get('cta_url') as string,
     video_bg_url: formData.get('video_bg_url') as string,
+    updated_at: new Date().toISOString(),
   }
 
-  // --- DEBUGGING LOG ---
-  console.log('Attempting update for user:', user.id)
-  console.log('Update payload:', updates)
-
+  // 3. Update the database
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)
     .eq('id', user.id)
-    .select() // This asks Supabase to return the row it just updated
+    .select()
 
   if (error) {
     console.error('Supabase Error:', error)
@@ -29,10 +34,11 @@ export async function updateProfile(formData: FormData) {
   }
 
   if (!data || data.length === 0) {
-    console.error('No rows updated. Check if the ID matches.')
-    return { error: 'No profile found to update. Try signing up again.' }
+    return { error: 'No profile found to update. Please refresh.' }
   }
 
+  // 4. Refresh the data so the UI updates instantly
   revalidatePath('/dashboard')
+  
   return { success: true }
 }
