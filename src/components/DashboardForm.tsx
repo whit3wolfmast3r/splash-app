@@ -15,6 +15,9 @@ export default function DashboardForm({ profile }: { profile: any }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
+  // Safety check for socials
+  const socials = profile?.social_links || {}
+
   async function handleSubmit(formData: FormData) {
     setLoading(true)
     setMessage('')
@@ -32,12 +35,11 @@ export default function DashboardForm({ profile }: { profile: any }) {
         </div>
       )}
 
-      {/* --- SECTION: PHOTO --- */}
       <div className="bg-zinc-50 p-6 rounded-2xl border border-zinc-100">
         <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Agent Headshot (PNG Only)</label>
         <div className="flex items-center gap-6">
           <img src={profile?.avatar_url} className="w-20 h-20 rounded-full object-cover bg-zinc-200" alt="" />
-          <input type="file" name="headshot" accept="image/png" className="text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-zinc-800 transition cursor-pointer" />
+          <input type="file" name="headshot" accept="image/png" className="text-sm" />
           <input type="hidden" name="current_avatar_url" defaultValue={profile?.avatar_url} />
         </div>
       </div>
@@ -58,16 +60,15 @@ export default function DashboardForm({ profile }: { profile: any }) {
           <input name="license_number" defaultValue={profile?.license_number} className="w-full bg-zinc-100 rounded-xl p-3 outline-none" />
         </div>
 
-        {/* --- SECTION: SOCIALS --- */}
-        <div className="col-span-2 grid grid-cols-2 gap-4">
-           <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 mt-4 mb-2">Social Media Links</div>
-           <input name="instagram" defaultValue={profile?.social_links?.instagram} placeholder="Instagram URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
-           <input name="facebook" defaultValue={profile?.social_links?.facebook} placeholder="Facebook URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
-           <input name="tiktok" defaultValue={profile?.social_links?.tiktok} placeholder="TikTok URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
-           <input name="youtube" defaultValue={profile?.social_links?.youtube} placeholder="YouTube URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
+        <div className="col-span-2 grid grid-cols-2 gap-4 border-t border-zinc-100 pt-6">
+           <div className="col-span-2 text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Social Media Links</div>
+           <input name="instagram" defaultValue={socials?.instagram || ''} placeholder="Instagram URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
+           <input name="facebook" defaultValue={socials?.facebook || ''} placeholder="Facebook URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
+           <input name="tiktok" defaultValue={socials?.tiktok || ''} placeholder="TikTok URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
+           <input name="youtube" defaultValue={socials?.youtube || ''} placeholder="YouTube URL" className="bg-zinc-100 rounded-xl p-3 text-sm outline-none" />
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-2 border-t border-zinc-100 pt-6">
           <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Background Theme</label>
           <select name="video_bg_url" defaultValue={profile?.video_bg_url} className="w-full bg-zinc-100 rounded-xl p-3 outline-none">
             {VIDEO_THEMES.map((theme) => (
@@ -88,7 +89,7 @@ export default function DashboardForm({ profile }: { profile: any }) {
       </div>
 
       <button disabled={loading} type="submit" className="w-full bg-black text-white font-bold py-4 rounded-2xl hover:bg-zinc-800 transition disabled:bg-zinc-400 shadow-xl">
-        {loading ? 'Processing...' : 'Save & Publish Changes'}
+        {loading ? 'Saving...' : 'Save & Publish Changes'}
       </button>
     </form>
   )
