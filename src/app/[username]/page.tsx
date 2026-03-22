@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { supabase } from '@/utils/supabase';
 import SplashPage from '@/components/SplashPage';
 import { notFound } from 'next/navigation';
