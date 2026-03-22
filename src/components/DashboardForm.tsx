@@ -15,7 +15,6 @@ export default function DashboardForm({ profile }: { profile: any }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
-  // Safety: Ensure socials is always an object
   const socials = profile?.social_links || {}
 
   async function handleSubmit(formData: FormData) {
@@ -49,6 +48,15 @@ export default function DashboardForm({ profile }: { profile: any }) {
       </div>
 
       <div className="space-y-6">
+        {/* USERNAME FIELD (THE FIX) */}
+        <div>
+          <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2 px-1">Unique Username (Your URL)</label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-medium">/</span>
+            <input name="username" defaultValue={profile?.username} required className="w-full bg-zinc-100 rounded-2xl p-4 pl-8 outline-none focus:ring-2 focus:ring-black font-bold" placeholder="username" />
+          </div>
+        </div>
+
         <div>
           <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2 px-1">Full Name</label>
           <input name="agent_name" defaultValue={profile?.agent_name} required className="w-full bg-zinc-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-black" />
