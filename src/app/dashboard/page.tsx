@@ -5,17 +5,29 @@ import DashboardForm from '@/components/DashboardForm'
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (authError || !user) {
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
+  // Explicitly fetching, and handling the potential error
+  const { data: profile, error: dbError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
+
+  // If there is a DB error, we show it on screen so we can fix it
+  if (dbError) {
+    return (
+      <div className="p-10 font-mono text-red-500 bg-black min-h-screen">
+        <h1 className="text-2xl font-bold mb-4">Database Error</h1>
+        <p>{dbError.message}</p>
+        <p className="mt-4 text-white">Make sure you ran the SQL script to add the social_links column!</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 p-4 md:p-8 font-sans">
@@ -35,12 +47,12 @@ export default async function DashboardPage() {
         </header>
 
         <div className="bg-white rounded-[2.5rem] shadow-sm border border-zinc-200 p-6 md:p-10">
-           <DashboardForm profile={profile} />
+           {/* Passing a default object for socials if it's null in the DB */}
+           <DashboardForm profile={{
+             ...profile,
+             social_links: profile.social_links || {}
+           }} />
         </div>
-
-        <p className="text-center text-zinc-400 text-xs mt-10">
-          Logged in as {user.email}
-        </p>
       </div>
     </div>
   )
