@@ -1,90 +1,121 @@
-import { Instagram, Facebook, Youtube, Home } from 'lucide-react';
+import React from 'react';
+import { 
+  Instagram, 
+  Facebook, 
+  Youtube, 
+  Video, 
+  ExternalLink 
+} from 'lucide-react';
 
-/** 
- * THE SCHEMA (TypeScript Interface)
- * This defines exactly what data a "Profile" must have.
- * This matches your Supabase table structure.
- */
-interface Profile {
-  agent_name: string;
-  avatar_url: string;
-  video_bg_url: string;
-  license_number?: string;
-  cta_text: string;
-  cta_url: string;
+interface SplashPageProps {
+  data: {
+    agent_name: string;
+    avatar_url: string; // The cutout PNG
+    video_bg_url: string; 
+    fallback_image_url?: string;
+    license_number: string;
+    cta_text: string;
+    cta_url: string;
+    social_links: Record<string, string>;
+    company_logo?: string;
+  };
 }
 
-export default function SplashPage({ profile }: { profile: Profile }) {
+const SOCIAL_MAP: Record<string, any> = {
+  instagram: { icon: Instagram, color: 'hover:text-pink-500' },
+  facebook: { icon: Facebook, color: 'hover:text-blue-500' },
+  youtube: { icon: Youtube, color: 'hover:text-red-500' },
+  tiktok: { icon: Video, color: 'hover:text-zinc-400' },
+};
+
+export default function SplashPage({ data }: SplashPageProps) {
+  
+  const getCtaHref = (url: string) => {
+    if (url.includes('@')) return `mailto:${url}`;
+    if (/^\d+$/.test(url.replace(/[-+() ]/g, ''))) return `tel:${url}`;
+    return url.startsWith('http') ? url : `https://${url}`;
+  };
+
   return (
-    // The main container: bg-zinc-950 gives a deep professional dark background
-    <div className="min-h-screen w-full bg-zinc-950 flex justify-center items-center p-4">
+    <div className="relative h-screen w-full flex flex-col items-center justify-between bg-black overflow-hidden font-sans selection:bg-white/30">
       
-      {/* Phone Frame: This 'max-w-md' makes it look like a phone on a desktop screen */}
-      <div className="relative h-[850px] w-full max-w-[390px] overflow-hidden flex flex-col items-center text-white shadow-2xl rounded-[3.5rem] border-[12px] border-zinc-900 bg-black">
+      {/* 1. VIDEO ENGINE */}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={data.fallback_image_url}
+          className="h-full w-full object-cover opacity-50" // Dimmed for readability
+        >
+          <source src={data.video_bg_url} type="video/mp4" />
+        </video>
+        {/* Dark Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
+      </div>
+
+      {/* 2. TOP NAV: Name & Socials */}
+      <div className="relative z-10 w-full pt-12 px-6 text-center space-y-4">
+        <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
+          {data.agent_name}
+        </h1>
         
-        {/* LAYER 1: Background Layer (Z-0) */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={profile.video_bg_url} 
-            className="w-full h-full object-cover opacity-40" 
-            alt="background" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black" />
+        <div className="flex justify-center gap-5">
+          {Object.entries(data.social_links || {}).map(([platform, url]) => {
+            const platformConfig = SOCIAL_MAP[platform.toLowerCase()];
+            if (!platformConfig) return null;
+            const Icon = platformConfig.icon;
+            return (
+              <a 
+                key={platform} 
+                href={url} 
+                className={`text-white/80 transition-colors duration-300 ${platformConfig.color}`}
+              >
+                <Icon size={28} strokeWidth={1.5} />
+              </a>
+            );
+          })}
         </div>
+      </div>
 
-        {/* LAYER 2: Avatar Layer with Cut-off Protection (Z-10) */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <img 
-            src={profile.avatar_url} 
-            /* 
-               We use 'bottom-0' to pin them to the floor, 
-               and 'w-[120%]' to make them large and immersive.
-            */
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] max-w-none h-auto object-contain origin-bottom" 
-            style={{ 
-              /* This fades the bottom of the image so 'short' photos look intentional */
-              WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 25%)',
-              maskImage: 'linear-gradient(to top, transparent 0%, black 25%)'
-            }}
-            alt="Agent Headshot" 
-          />
-        </div>
+      {/* 3. CENTER: THE AGENT CUTOUT */}
+      {/* We use a gradient mask to fade the bottom of the agent into the button area */}
+      <div className="relative z-0 flex-1 w-full flex items-end justify-center overflow-hidden">
+        <img
+          src={data.avatar_url}
+          alt={data.agent_name}
+          className="max-h-[70vh] w-auto object-contain select-none"
+          style={{
+            maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
+          }}
+        />
+      </div>
 
-        {/* LAYER 3: Content Layer (Z-20) */}
-        <div className="relative z-20 w-full px-8 flex flex-col items-center h-full text-center py-16">
+      {/* 4. BOTTOM ACTION AREA */}
+      <div className="relative z-10 w-full max-w-md px-6 pb-10 space-y-8 bg-gradient-to-t from-black via-black/80 to-transparent">
+        
+        {/* CTA Button */}
+        <a
+          href={getCtaHref(data.cta_url)}
+          className="flex items-center justify-center w-full py-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white font-semibold text-lg shadow-2xl hover:bg-white/20 transition-all group"
+        >
+          {data.cta_text}
+          <ExternalLink size={18} className="ml-2 opacity-50 group-hover:opacity-100 transition-opacity" />
+        </a>
+
+        {/* Footer Polish */}
+        <div className="flex items-center justify-between text-[10px] tracking-[0.2em] text-white/40 uppercase font-bold">
+          <div className="flex items-center gap-3">
+             {data.company_logo && <img src={data.company_logo} className="h-4 opacity-50" alt="Broker" />}
+             <span>NV LIC: {data.license_number}</span>
+          </div>
           
-          {/* Top Section: Name & Socials */}
-          <div className="space-y-4">
-            <h1 className="text-4xl font-medium tracking-tight drop-shadow-2xl">
-              {profile.agent_name}
-            </h1>
-            
-            <div className="flex justify-center gap-6">
-               <Facebook className="w-7 h-7 text-white/90 hover:text-blue-500 transition-colors cursor-pointer" />
-               <Instagram className="w-7 h-7 text-white/90 hover:text-pink-500 transition-colors cursor-pointer" />
-               <Youtube className="w-7 h-7 text-white/90 hover:text-red-500 transition-colors cursor-pointer" />
-            </div>
+          <div className="flex items-center gap-1 border border-white/20 px-2 py-1 rounded">
+             <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+             <span>Equal Housing</span>
           </div>
-
-          {/* Bottom Section: CTA & Legal Footer */}
-          {/* 'mt-auto' pushes this section to the very bottom */}
-          <div className="mt-auto w-full space-y-6 pb-4">
-            <a 
-              href={profile.cta_url || '#'} 
-              className="block w-full py-4 border border-white/20 rounded-2xl text-xl font-semibold backdrop-blur-2xl bg-black/60 hover:bg-white hover:text-black transition-all duration-500 shadow-2xl"
-            >
-              {profile.cta_text}
-            </a>
-
-            <div className="flex justify-between items-center text-[10px] opacity-40 uppercase tracking-[0.2em] font-bold px-1">
-              <span>LICENSE: {profile.license_number || 'REQUIRED'}</span>
-              <div className="flex items-center gap-1.5 border border-white/30 px-2 py-0.5 rounded">
-                <Home className="w-3 h-3" />
-                <span>EQUAL HOUSING</span>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
