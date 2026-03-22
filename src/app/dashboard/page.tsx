@@ -1,18 +1,16 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import DashboardForm from '@/components/DashboardForm'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  // 1. Check if the user is actually logged in
   const { data: { user } } = await supabase.auth.getUser()
 
-  // 2. If not, send them back to login
   if (!user) {
     redirect('/login')
   }
 
-  // 3. Fetch the profile for this specific user
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
@@ -20,19 +18,29 @@ export default async function DashboardPage() {
     .single()
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-8 font-sans">
+    <div className="min-h-screen bg-zinc-50 p-4 md:p-8 font-sans">
       <div className="max-w-2xl mx-auto">
-        <header className="flex justify-between items-center mb-10">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Dashboard</h1>
-            <p className="text-zinc-500 text-sm">Welcome back, {profile?.agent_name}</p>
+            <h1 className="text-3xl font-bold text-zinc-900 tracking-tight italic">Splash Admin</h1>
+            <p className="text-zinc-500 text-sm">Editing page for <span className="font-bold">@{profile?.username}</span></p>
           </div>
-          {/* We will add a Logout button here later */}
+          <a 
+            href={`/${profile?.username}`} 
+            target="_blank" 
+            className="px-6 py-2 bg-white border border-zinc-200 rounded-full text-sm font-bold shadow-sm hover:bg-zinc-50 transition"
+          >
+            View Live Page
+          </a>
         </header>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-zinc-200 p-8">
-           <p className="text-zinc-400 italic text-center py-10">Form coming in the next step...</p>
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-zinc-200 p-6 md:p-10">
+           <DashboardForm profile={profile} />
         </div>
+
+        <p className="text-center text-zinc-400 text-xs mt-10">
+          Logged in as {user.email}
+        </p>
       </div>
     </div>
   )
