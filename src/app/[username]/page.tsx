@@ -1,8 +1,8 @@
-export const dynamic = 'force-dynamic';
-// Use ../../ to go up two levels to find utils and components
 import { supabase } from '../../utils/supabase';
 import SplashPage from '../../components/SplashPage';
 import { notFound } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
@@ -13,7 +13,7 @@ export default async function Page({ params }: { params: Promise<{ username: str
     .eq('username', username)
     .single();
 
-  if (!profile || error) return notFound();
+  if (error || !profile) return notFound();
 
   return <SplashPage profile={profile} />;
 }

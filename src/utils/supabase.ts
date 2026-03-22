@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-// If the keys are missing (like during a Vercel build), we use a placeholder 
-// so the app doesn't crash.
+// This prevents Vercel from crashing if the keys aren't loaded yet
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tmp.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'tmp'
 
