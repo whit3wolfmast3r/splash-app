@@ -1,16 +1,9 @@
-'use server'
-
-import { createClient } from '@/utils/supabase/server'
-import { revalidatePath } from 'next/cache'
-
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
 
-  // 1. Get the current user
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
+  if (!user) return { error: 'Not authenticated' }
 
-  // 2. Prepare the data from the form
   const updates = {
     agent_name: formData.get('agent_name') as string,
     username: (formData.get('username') as string).toLowerCase().replace(/\s+/g, '-'),
@@ -18,23 +11,28 @@ export async function updateProfile(formData: FormData) {
     cta_text: formData.get('cta_text') as string,
     cta_url: formData.get('cta_url') as string,
     video_bg_url: formData.get('video_bg_url') as string,
-    updated_at: new Date().toISOString(),
   }
 
-  // 3. Update the database
-  const { error } = await supabase
+  // --- DEBUGGING LOG ---
+  console.log('Attempting update for user:', user.id)
+  console.log('Update payload:', updates)
+
+  const { data, error } = await supabase
     .from('profiles')
     .update(updates)
     .eq('id', user.id)
+    .select() // This asks Supabase to return the row it just updated
 
   if (error) {
-    if (error.code === '23505') return { error: 'Username is already taken.' }
+    console.error('Supabase Error:', error)
     return { error: error.message }
   }
 
-  // 4. Refresh the data on the page
+  if (!data || data.length === 0) {
+    console.error('No rows updated. Check if the ID matches.')
+    return { error: 'No profile found to update. Try signing up again.' }
+  }
+
   revalidatePath('/dashboard')
-  revalidatePath(`/${updates.username}`)
-  
   return { success: true }
 }
