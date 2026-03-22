@@ -1,3 +1,5 @@
+import { login, signup } from './actions'
+
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-6 font-sans">
@@ -7,6 +9,7 @@ export default function LoginPage() {
           <p className="text-zinc-400 text-sm mt-2 font-medium">Manage your real estate splash page</p>
         </div>
 
+        {/* Note the 'form' now has no 'onSubmit'. We use 'formAction' on the buttons instead. */}
         <form className="space-y-4">
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Email Address</label>
@@ -29,9 +32,19 @@ export default function LoginPage() {
           </div>
           
           <div className="flex gap-4 pt-4">
-            {/* These buttons don't do anything yet, we are just checking the UI */}
-            <button type="button" className="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition text-sm">Log In</button>
-            <button type="button" className="flex-1 bg-zinc-800 text-white font-bold py-3 rounded-xl hover:bg-zinc-700 transition text-sm">Sign Up</button>
+            {/* Added formAction here */}
+            <button 
+              formAction={login}
+              className="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition text-sm"
+            >
+              Log In
+            </button>
+            <button 
+              formAction={signup}
+              className="flex-1 bg-zinc-800 text-white font-bold py-3 rounded-xl hover:bg-zinc-700 transition text-sm"
+            >
+              Sign Up
+            </button>
           </div>
         </form>
       </div>
