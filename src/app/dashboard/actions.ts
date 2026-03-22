@@ -11,17 +11,23 @@ export async function updateProfile(formData: FormData) {
   let avatar_url = formData.get('current_avatar_url') as string
   const headshotFile = formData.get('headshot') as File
 
-  // 1. Handle Image Upload (Safe Version)
+  // 1. Handle Image Upload
   if (headshotFile && headshotFile.size > 0 && headshotFile.name !== 'undefined') {
-    const fileExt = headshotFile.name.split('.').pop()
-    if (fileExt?.toLowerCase() !== 'png') {
+    const fileExt = headshotFile.name.split('.').pop()?.toLowerCase()
+    if (fileExt !== 'png') {
       return { error: 'Please upload a PNG file only.' }
     }
 
-    const fileName = `${user.id}-${Date.now()}.png`
+    // Use a fixed name so we don't fill up storage with 100 copies of the same agent
+    const fileName = `${user.id}-headshot.png`
+    
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(fileName, headshotFile, { upsert: true, contentType: 'image/png' })
+      .upload(fileName, headshotFile, { 
+        upsert: true, 
+        contentType: 'image/png',
+        cacheControl: '3600' 
+      })
 
     if (uploadError) return { error: 'Upload failed: ' + uploadError.message }
 
@@ -29,7 +35,8 @@ export async function updateProfile(formData: FormData) {
       .from('avatars')
       .getPublicUrl(fileName)
     
-    avatar_url = publicUrl
+    // Add a timestamp to the URL to force the browser to refresh the image
+    avatar_url = `${publicUrl}?t=${Date.now()}`
   }
 
   // 2. Build Social Links Object safely
@@ -50,6 +57,7 @@ export async function updateProfile(formData: FormData) {
     video_bg_url: formData.get('video_bg_url') as string,
     avatar_url: avatar_url,
     social_links: social_links,
+    updated_at: new Date().toISOString(),
   }
 
   const { error } = await supabase

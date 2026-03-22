@@ -5,24 +5,21 @@ import DashboardForm from '@/components/DashboardForm'
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  // 1. Get User
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // 2. Get Profile
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  // 3. Handle Missing Profile (If trigger failed)
   if (!profile) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 text-center">
         <div className="max-w-sm">
           <h1 className="text-white text-xl font-bold mb-4">Profile Not Found</h1>
-          <p className="text-zinc-400 mb-6 text-sm">We couldn't find your agent profile. This happens if the signup process didn't finish correctly.</p>
+          <p className="text-zinc-400 mb-6 text-sm">We couldn't find your agent profile.</p>
           <a href="/login" className="text-white underline font-bold">Try Logging out and back in</a>
         </div>
       </div>
@@ -37,6 +34,7 @@ export default async function DashboardPage() {
             <h1 className="text-3xl font-bold text-zinc-900 tracking-tight italic">Splash Admin</h1>
             <p className="text-zinc-500 text-sm">Editing page for <span className="font-bold">@{profile.username}</span></p>
           </div>
+          {/* FIXED: Removed duplicate 'a' */}
           <a 
             href={`/${profile.username}`} 
             target="_blank" 
@@ -47,7 +45,6 @@ export default async function DashboardPage() {
         </header>
 
         <div className="bg-white rounded-[2.5rem] shadow-sm border border-zinc-200 p-6 md:p-10">
-           {/* We force social_links to be an object so the form doesn't crash */}
            <DashboardForm profile={{
              ...profile,
              social_links: (profile.social_links && !Array.isArray(profile.social_links)) ? profile.social_links : {}
