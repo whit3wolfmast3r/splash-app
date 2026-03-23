@@ -6,11 +6,9 @@ export default async function DashboardPage() {
   try {
     const supabase = await createClient()
 
-    // 1. Get User
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) redirect('/login')
 
-    // 2. Get Profile - Use maybeSingle() to prevent crashing if no row exists
     const { data: profile, error: dbError } = await supabase
       .from('profiles')
       .select('*')
@@ -19,20 +17,18 @@ export default async function DashboardPage() {
 
     if (dbError) throw new Error(dbError.message)
 
-    // 3. Handle Missing Profile
     if (!profile) {
       return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 text-center">
-          <div className="max-w-sm">
-            <h1 className="text-white text-xl font-bold mb-4">Profile Not Found</h1>
-            <p className="text-zinc-400 mb-6 text-sm">We couldn't find your agent profile in the database.</p>
-            <a href="/login" className="text-white underline font-bold">Log out and try again</a>
+          <div className="max-w-sm text-white">
+            <h1 className="text-xl font-bold mb-4">Profile Not Found</h1>
+            <p className="text-zinc-400 mb-6 text-sm">We couldn't find your agent profile.</p>
+            <a href="/login" className="underline font-bold">Log out and try again</a>
           </div>
         </div>
       )
     }
 
-    // 4. Clean the data before passing it to the Form
     const safeProfile = {
       ...profile,
       username: profile.username || '',
@@ -51,6 +47,7 @@ export default async function DashboardPage() {
               <h1 className="text-3xl font-bold text-zinc-900 tracking-tight italic">Splash Admin</h1>
               <p className="text-zinc-500 text-sm">Editing: <span className="font-bold">@{safeProfile.username}</span></p>
             </div>
+            {/* FIXED: Removed duplicate 'a' */}
             <a 
               href={`/${safeProfile.username}`} 
               target="_blank" 
@@ -67,11 +64,6 @@ export default async function DashboardPage() {
       </div>
     )
   } catch (error: any) {
-    return (
-      <div className="p-10 bg-black text-red-500 min-h-screen font-mono text-sm">
-        <h1 className="text-xl font-bold mb-4">Critical Load Error</h1>
-        <p>{error.message}</p>
-      </div>
-    )
+    return <div className="p-10 bg-black text-red-500 min-h-screen font-mono text-sm">{error.message}</div>
   }
 }
