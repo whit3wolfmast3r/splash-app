@@ -28,7 +28,7 @@ export default function SplashPage({ profile }: { profile: any }) {
 
   return (
     <div className="min-h-screen w-full bg-zinc-950 flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
-      {/* Mobile-First Container: Using h-screen on mobile, fixed height on desktop */}
+      {/* Container Frame */}
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col items-center text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
         
         {/* --- LAYER 1: VIDEO BACKGROUND --- */}
@@ -46,10 +46,10 @@ export default function SplashPage({ profile }: { profile: any }) {
           {profile.avatar_url && (
             <img 
               src={profile.avatar_url} 
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[130%] max-w-none h-auto object-contain origin-bottom" 
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[135%] max-w-none h-auto object-contain origin-bottom" 
               style={{ 
-                maskImage: 'linear-gradient(to top, transparent 8%, black 40%)', 
-                WebkitMaskImage: 'linear-gradient(to top, transparent 8%, black 40%)' 
+                maskImage: 'linear-gradient(to top, transparent 5%, black 40%)', 
+                WebkitMaskImage: 'linear-gradient(to top, transparent 5%, black 40%)' 
               }}
               alt="" 
             />
@@ -59,9 +59,9 @@ export default function SplashPage({ profile }: { profile: any }) {
         {/* --- LAYER 3: CONTENT --- */}
         <div className="relative z-20 w-full px-8 flex flex-col items-center h-full text-center py-16">
           
-          {/* Header Info */}
+          {/* Header Name & Socials */}
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight drop-shadow-2xl text-white">
+            <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-2xl">
               {profile.agent_name}
             </h1>
             
@@ -79,10 +79,10 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
           </div>
 
-          {/* Bottom Branding & Action Area */}
-          <div className="mt-auto w-full flex flex-col items-center gap-8 pb-10">
+          {/* Action and Branding Footer */}
+          <div className="mt-auto w-full flex flex-col items-center gap-10 pb-12">
             
-            {/* CTA Button: Spans Full Width */}
+            {/* Primary Action Button */}
             <a 
               href={getCtaHref(profile.cta_url, profile.cta_text)} 
               className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 shadow-2xl"
@@ -91,33 +91,31 @@ export default function SplashPage({ profile }: { profile: any }) {
               <ExternalLink className="w-5 h-5 opacity-40 group-hover:opacity-100" />
             </a>
 
-            {/* BRANDING FOOTER: Stacked & Centered */}
-            <div className="w-full flex flex-col items-center gap-4">
+            {/* BRANDING SECTION */}
+            <div className="w-full flex flex-col items-center space-y-6">
               
-              {/* Company Logo: Centered and sized properly */}
+              {/* Company/Brokerage Logo */}
               {profile.company_logo && (
                 <img 
                   src={profile.company_logo} 
-                  className="h-12 w-auto object-contain opacity-90 drop-shadow-md" 
+                  className="h-14 w-auto object-contain opacity-100 drop-shadow-lg" 
                   alt="Brokerage" 
                 />
               )}
 
-              {/* Legal Info Line: Centered with Divider */}
-              <div className="flex items-center gap-4 text-white/40">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+              {/* Legal Info Stack */}
+              <div className="flex flex-col items-center gap-4">
+                {/* NV License: Bigger and bolder */}
+                <span className="text-sm font-bold uppercase tracking-[0.25em] text-white/60">
                   NV LIC: {profile.license_number || 'REQUIRED'}
                 </span>
-                
-                {/* Vertical Divider */}
-                <div className="h-3 w-px bg-white/20" />
 
-                {/* Equal Housing Icon: SVG for zero-fail loading */}
-                <div className="flex items-center" title="Equal Housing Opportunity">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-                    <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 10c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-                  </svg>
-                </div>
+                {/* THE MANDATORY LOGO: Loaded from /public/equal-housing.png */}
+                <img 
+                  src="/equal-housing.png" 
+                  alt="Equal Housing Opportunity" 
+                  className="h-10 w-auto opacity-80"
+                />
               </div>
             </div>
 
