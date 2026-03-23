@@ -28,10 +28,9 @@ export default function SplashPage({ profile }: { profile: any }) {
 
   return (
     <div className="min-h-screen w-full bg-zinc-950 flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
-      {/* Container Frame */}
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col items-center text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
         
-        {/* --- LAYER 1: VIDEO BACKGROUND --- */}
+        {/* --- VIDEO BACKGROUND --- */}
         <div className="absolute inset-0 z-0">
           {profile.video_bg_url && (
             <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-50">
@@ -41,15 +40,15 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black" />
         </div>
 
-        {/* --- LAYER 2: AGENT CUTOUT --- */}
+        {/* --- LAYER 2: AGENT CUTOUT (Pushed Down) --- */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           {profile.avatar_url && (
             <img 
               src={profile.avatar_url} 
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[135%] max-w-none h-auto object-contain origin-bottom" 
+              className="absolute bottom-[-5%] left-1/2 -translate-x-1/2 w-[120%] max-w-none h-auto object-contain origin-bottom" 
               style={{ 
-                maskImage: 'linear-gradient(to top, transparent 5%, black 40%)', 
-                WebkitMaskImage: 'linear-gradient(to top, transparent 5%, black 40%)' 
+                maskImage: 'linear-gradient(to top, transparent 0%, black 20%, black 80%, transparent 100%)', 
+                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 20%, black 80%, transparent 100%)' 
               }}
               alt="" 
             />
@@ -57,66 +56,58 @@ export default function SplashPage({ profile }: { profile: any }) {
         </div>
 
         {/* --- LAYER 3: CONTENT --- */}
-        <div className="relative z-20 w-full px-8 flex flex-col items-center h-full text-center py-16">
+        <div className="relative z-20 w-full px-8 flex flex-col items-center h-full text-center py-12">
           
-          {/* Header Name & Socials */}
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-2xl">
-              {profile.agent_name}
-            </h1>
-            
-            <div className="flex justify-center gap-6">
-               {profile.social_links && Object.entries(profile.social_links).slice(0, 4).map(([platform, url]) => {
-                 const Config = SOCIAL_MAP[platform];
-                 const href = url as string;
-                 if (!Config || !href) return null;
-                 return (
-                   <a key={platform} href={href} target="_blank" rel="noreferrer" className={`transition-all duration-300 text-white/70 hover:scale-110 ${Config.color}`}>
-                     <Config.icon className="w-7 h-7" />
-                   </a>
-                 );
-               })}
+          {/* TOP SECTION: Branding, Name, Socials */}
+          <div className="space-y-6 w-full flex flex-col items-center">
+            {/* 1. Brokerage Logo (Top Priority) */}
+            {profile.company_logo && (
+              <img src={profile.company_logo} className="h-12 w-auto object-contain drop-shadow-md mb-2" alt="Brokerage" />
+            )}
+
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-2xl italic uppercase">
+                {profile.agent_name}
+              </h1>
+              
+              {/* Socials - Clean Icons */}
+              <div className="flex justify-center gap-5 pt-2">
+                 {profile.social_links && Object.entries(profile.social_links).slice(0, 4).map(([platform, url]) => {
+                   const Config = SOCIAL_MAP[platform];
+                   const href = url as string;
+                   if (!Config || !href) return null;
+                   return (
+                     <a key={platform} href={href} target="_blank" rel="noreferrer" className={`transition-all duration-300 text-white/60 ${Config.color}`}>
+                       <Config.icon className="w-6 h-6 stroke-[1.5px]" />
+                     </a>
+                   );
+                 })}
+              </div>
             </div>
           </div>
 
-          {/* Action and Branding Footer */}
-          <div className="mt-auto w-full flex flex-col items-center gap-10 pb-12">
+          {/* BOTTOM SECTION: CTA & Legal */}
+          <div className="mt-auto w-full flex flex-col items-center gap-6 pb-12">
             
-            {/* Primary Action Button */}
+            {/* Main Action Button */}
             <a 
               href={getCtaHref(profile.cta_url, profile.cta_text)} 
-              className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 shadow-2xl"
+              className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 shadow-2xl uppercase tracking-widest"
             >
               {profile.cta_text}
               <ExternalLink className="w-5 h-5 opacity-40 group-hover:opacity-100" />
             </a>
 
-            {/* BRANDING SECTION */}
-            <div className="w-full flex flex-col items-center space-y-6">
-              
-              {/* Company/Brokerage Logo */}
-              {profile.company_logo && (
-                <img 
-                  src={profile.company_logo} 
-                  className="h-14 w-auto object-contain opacity-100 drop-shadow-lg" 
-                  alt="Brokerage" 
-                />
-              )}
-
-              {/* Legal Info Stack */}
-              <div className="flex flex-col items-center gap-4">
-                {/* NV License: Bigger and bolder */}
-                <span className="text-sm font-bold uppercase tracking-[0.25em] text-white/60">
+            {/* LEGAL FOOTER: Clean and Professional */}
+            <div className="flex flex-col items-center gap-4">
+               <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50">
                   NV LIC: {profile.license_number || 'REQUIRED'}
-                </span>
-
-                {/* THE MANDATORY LOGO: Loaded from /public/equal-housing.png */}
-                <img 
-                  src="/equal-housing.png" 
-                  alt="Equal Housing Opportunity" 
-                  className="h-10 w-auto opacity-80"
-                />
-              </div>
+               </span>
+               <img 
+                 src="/equal-housing.png" 
+                 alt="Equal Housing Opportunity" 
+                 className="h-10 w-auto opacity-70 brightness-150"
+               />
             </div>
 
           </div>
