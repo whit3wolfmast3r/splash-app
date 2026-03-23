@@ -77,7 +77,7 @@ export default function SplashPage({ profile }: { profile: any }) {
               <ExternalLink className="w-5 h-5 opacity-40" />
             </a>
 
-            <div className="flex justify-between items-center px-2">
+ <div className="flex justify-between items-center px-2 w-full">
               <div className="flex items-center gap-3">
                 {/* BROKERAGE LOGO */}
                 {profile.company_logo && (
@@ -88,10 +88,12 @@ export default function SplashPage({ profile }: { profile: any }) {
                 </span>
               </div>
               
-              {/* EQUAL HOUSING LOGO (JUST THE ICON) */}
-              <div className="opacity-40 border border-white/30 p-1 rounded">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
-              </div>
+              {/* PERMANENT EQUAL HOUSING LOGO */}
+              <img 
+                src="/equal-housing.png" 
+                className="h-7 w-auto opacity-50 invert" 
+                alt="Equal Housing Opportunity" 
+              />
             </div>
           </div>
         </div>

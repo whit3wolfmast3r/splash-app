@@ -3,13 +3,7 @@
 import { useState } from 'react'
 import { updateProfile } from '@/app/dashboard/actions'
 
-const BUTTON_OPTIONS = [
-  'Book Consultation',
-  'Call Me',
-  'Text Me',
-  'Email Me'
-]
-
+const BUTTON_OPTIONS = ['Book Consultation', 'Call Me', 'Text Me', 'Email Me']
 const SOCIAL_NETWORKS = ['Instagram', 'Facebook', 'TikTok', 'YouTube', 'LinkedIn', 'WhatsApp', 'Zillow', 'WeChat']
 
 export default function DashboardForm({ profile }: { profile: any }) {
@@ -53,6 +47,26 @@ export default function DashboardForm({ profile }: { profile: any }) {
           <input type="file" name="company_logo_file" accept="image/png" className="text-[10px]" />
           <input type="hidden" name="current_company_logo" defaultValue={profile?.company_logo} />
         </div>
+      </div>
+
+      {/* USERNAME (THE FIX) */}
+      <div className="pt-4 border-t border-zinc-200">
+        <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Unique Username (Your URL)</label>
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">/</span>
+          <input name="username" defaultValue={profile?.username} required className="w-full bg-zinc-100 rounded-2xl p-4 pl-8 outline-none focus:ring-2 focus:ring-black font-bold" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Full Name</label>
+            <input name="agent_name" defaultValue={profile?.agent_name} required className="w-full bg-zinc-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-black" />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">NV License #</label>
+            <input name="license_number" defaultValue={profile?.license_number} placeholder="S.0179666" className="w-full bg-zinc-100 rounded-2xl p-4 outline-none" />
+          </div>
       </div>
 
       {/* SMART BUTTON */}
