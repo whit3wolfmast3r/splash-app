@@ -1,10 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-/**
- * THE MIDDLEWARE FUNCTION
- * This must be named 'middleware' for Next.js to find it.
- */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -42,21 +38,22 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // This refreshes the session if it's expired
-  await supabase.auth.getUser()
+  // This line checks the user's status and refreshes the cookie
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Protect the dashboard: if no user, send to login
+  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // If user is logged in and tries to go to login page, send to dashboard
+  if (request.nextUrl.pathname === '/login' && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   return response
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder files (svg, png, etc)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/dashboard/:path*', '/login'],
 }
