@@ -1,20 +1,44 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server'
+
 export async function login(formData: FormData) {
   const supabase = await createClient()
-
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    console.error('Login error:', error.message)
+    redirect('/login?error=Invalid Credentials')
+  }
+
+  revalidatePath('/', 'layout')
+  redirect('/dashboard')
+}
+
+export async function signup(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      // UPDATED TO YOUR NEW DOMAIN
+      emailRedirectTo: `https://agentlynxx.com/auth/callback`,
+    },
   })
 
   if (error) {
-    console.error(error)
-    redirect('/login?error=Invalid credentials')
+    console.error('Signup error:', error.message)
+    redirect('/login?error=Signup Failed')
   }
 
-  // Forces the browser to refresh and see the new cookie
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
