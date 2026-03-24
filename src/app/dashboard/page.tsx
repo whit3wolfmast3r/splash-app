@@ -1,69 +1,37 @@
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
-import DashboardForm from '@/components/DashboardForm'
+import Link from 'next/link';
 
-export default async function DashboardPage() {
-  try {
-    const supabase = await createClient()
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) redirect('/login')
-
-    const { data: profile, error: dbError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (dbError) throw new Error(dbError.message)
-
-    if (!profile) {
-      return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 text-center">
-          <div className="max-w-sm text-white">
-            <h1 className="text-xl font-bold mb-4">Profile Not Found</h1>
-            <p className="text-zinc-400 mb-6 text-sm">We couldn't find your agent profile.</p>
-            <a href="/login" className="underline font-bold">Log out and try again</a>
-          </div>
-        </div>
-      )
-    }
-
-    const safeProfile = {
-      ...profile,
-      username: profile.username || '',
-      agent_name: profile.agent_name || 'New Agent',
-      avatar_url: (profile.avatar_url === 'EMPTY' || !profile.avatar_url) ? '' : profile.avatar_url,
-      social_links: (profile.social_links && !Array.isArray(profile.social_links)) ? profile.social_links : {},
-      cta_text: profile.cta_text || 'Book Consultation',
-      cta_url: profile.cta_url || ''
-    }
-
-    return (
-      <div className="min-h-screen bg-zinc-50 p-4 md:p-8 font-sans">
-        <div className="max-w-2xl mx-auto">
-          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-zinc-900 tracking-tight italic">Splash Admin</h1>
-              <p className="text-zinc-500 text-sm">Editing: <span className="font-bold">@{safeProfile.username}</span></p>
-            </div>
-            {/* FIXED: Removed duplicate 'a' */}
-            <a 
-              href={`/${safeProfile.username}`} 
-              target="_blank" 
-              className="px-6 py-2 bg-white border border-zinc-200 rounded-full text-sm font-bold shadow-sm hover:bg-zinc-50 transition"
-            >
-              View Live Page
-            </a>
-          </header>
-
-          <div className="bg-white rounded-[2.5rem] shadow-sm border border-zinc-200 p-6 md:p-10">
-             <DashboardForm profile={safeProfile} />
-          </div>
-        </div>
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 text-center font-sans">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#00AEEF] opacity-5 blur-[120px]" />
       </div>
-    )
-  } catch (error: any) {
-    return <div className="p-10 bg-black text-red-500 min-h-screen font-mono text-sm">{error.message}</div>
-  }
+
+      <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white mb-4">
+        Agent <span className="text-[#00AEEF]">Lynxx</span>
+      </h1>
+      <p className="text-zinc-400 text-lg md:text-xl max-w-md mb-12 font-medium">
+        The ultimate luxury digital business card for modern real estate professionals.
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+        <Link 
+          href="/login" 
+          className="flex-1 bg-white text-black font-black py-5 rounded-2xl hover:bg-[#00AEEF] hover:text-white transition-all uppercase tracking-widest shadow-2xl"
+        >
+          Get Started
+        </Link>
+        <Link 
+          href="/test" 
+          className="flex-1 bg-zinc-900 text-white border border-zinc-800 font-bold py-5 rounded-2xl hover:bg-zinc-800 transition-all uppercase tracking-widest text-sm"
+        >
+          View Demo
+        </Link>
+      </div>
+
+      <footer className="absolute bottom-8 text-zinc-600 text-[10px] uppercase tracking-[0.3em] font-bold">
+        © 2024 Agent Lynxx Media Group
+      </footer>
+    </main>
+  );
 }
