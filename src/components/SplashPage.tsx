@@ -1,4 +1,6 @@
-import React from 'react';
+'use client' // Added this because we need client-side logic to measure the image
+
+import React, { useState } from 'react';
 import { 
   Instagram, Facebook, Youtube, Video, Home, ExternalLink, 
   Linkedin, MessageCircle, Phone, Mail, Globe 
@@ -16,6 +18,16 @@ const SOCIAL_MAP: Record<string, any> = {
 };
 
 export default function SplashPage({ profile }: { profile: any }) {
+  // Logic to detect if the photo is "Tall" or "Tight"
+  const [isTall, setIsTall] = useState(false);
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    // If the image is significantly taller than it is wide, it's a full-body shot
+    if (naturalHeight / naturalWidth > 1.2) {
+      setIsTall(true);
+    }
+  };
   
   const getCtaHref = (url: string, text: string) => {
     if (!url) return '#';
@@ -28,10 +40,9 @@ export default function SplashPage({ profile }: { profile: any }) {
 
   return (
     <div className="min-h-screen w-full bg-[#050505] flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
-      {/* Mobile-First Container */}
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
         
-        {/* --- BACKGROUND VIDEO (Full Screen) --- */}
+        {/* --- LAYER 1: VIDEO BACKGROUND --- */}
         <div className="absolute inset-0 z-0">
           {profile.video_bg_url && (
             <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-40">
@@ -41,12 +52,33 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black" />
         </div>
 
-        {/* --- 1. HEADER SECTION (Logo, Name, Socials) --- */}
+        {/* --- LAYER 2: THE AGENT (SMART LOGIC) --- */}
+        <div className="absolute inset-0 z-10 pointer-events-none flex items-end justify-center overflow-hidden">
+          {profile.avatar_url && (
+            <img 
+              src={profile.avatar_url} 
+              onLoad={handleImageLoad}
+              className={`
+                max-w-none transition-all duration-1000 origin-bottom
+                ${isTall 
+                  ? "w-[145%] mb-[-12%] translate-y-[5%]" // PORTRAIT STYLE: Pushed down, cut off legs
+                  : "w-[130%] h-[65%] object-contain object-bottom mb-[-2%]" // HEADSHOT STYLE: Contained and sitting on dock
+                }
+              `}
+              style={{ 
+                maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 85%, transparent 100%)', 
+                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 85%, transparent 100%)' 
+              }}
+              alt="" 
+            />
+          )}
+        </div>
+
+        {/* --- LAYER 3: HEADER (Logo, Name, Socials) --- */}
         <div className="relative z-30 flex-none w-full px-8 pt-12 pb-4 flex flex-col items-center text-center">
-            {profile.company_logo && (
+            {profile.company_logo ? (
               <img src={profile.company_logo} className="h-10 w-auto object-contain mb-4 drop-shadow-md" alt="Brokerage" />
-            ) || (
-              /* Temporary Agent Lynxx Branding if no logo uploaded */
+            ) : (
               <div className="text-[#00AEEF] font-black tracking-tighter text-xs mb-4 uppercase italic">Agent Lynxx Premium</div>
             )}
             
@@ -68,27 +100,8 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </div>
 
-        {/* --- 2. THE STAGE (Flexible Image Area) --- */}
-        {/* 
-            The 'flex-1' makes this section grab all available middle space. 
-            'object-bottom' ensures the agent stands on the button dock.
-        */}
-        <div className="relative z-10 flex-1 w-full flex items-end justify-center overflow-hidden px-4">
-          {profile.avatar_url && (
-            <img 
-              src={profile.avatar_url} 
-              className="max-w-none w-[130%] h-full object-contain object-bottom transition-all duration-700" 
-              style={{ 
-                maskImage: 'linear-gradient(to top, transparent 0%, black 15%)', 
-                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%)' 
-              }}
-              alt="" 
-            />
-          )}
-        </div>
-
-        {/* --- 3. THE DOCK (Bottom Action Area) --- */}
-        <div className="relative z-30 flex-none w-full px-8 pb-10 pt-6 bg-gradient-to-t from-black via-black to-transparent flex flex-col items-center gap-6">
+        {/* --- LAYER 4: THE DOCK (Bottom Area) --- */}
+        <div className="relative z-30 mt-auto w-full px-8 pb-10 pt-12 bg-gradient-to-t from-black via-black/90 to-transparent flex flex-col items-center gap-6">
             
             <a 
               href={getCtaHref(profile.cta_url, profile.cta_text)} 
