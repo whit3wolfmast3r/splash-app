@@ -16,10 +16,11 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    // We will handle errors better later, for now just redirect to an error page
-    redirect('/login?error=Could not authenticate user')
+    console.error(error)
+    redirect('/login?error=Invalid credentials')
   }
 
+  // CRITICAL: This clears the cache so the dashboard sees the new user session
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
@@ -33,10 +34,14 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+    },
   })
 
   if (error) {
-    redirect('/login?error=Could not signup user')
+    console.error(error)
+    redirect('/login?error=Signup failed')
   }
 
   revalidatePath('/', 'layout')

@@ -1,8 +1,27 @@
-export default function Home() {
+import Link from 'next/link';
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-4 text-center">
-      <h1 className="text-4xl font-bold mb-4">Splash App is Live!</h1>
-      <p className="opacity-70 text-lg">Go to <span className="text-blue-400 font-mono">/test</span> in the URL bar to see a profile.</p>
+    <main className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 text-center font-sans">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#00AEEF] opacity-5 blur-[120px]" />
+      </div>
+
+      <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white mb-4">
+        agent <span className="text-[#00AEEF] normal-case">Lynxx</span>
+      </h1>
+      <p className="text-zinc-400 text-lg md:text-xl max-w-md mb-12 font-medium">
+        The ultimate luxury digital business card for modern real estate professionals.
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+        <Link 
+          href="/login" 
+          className="flex-1 bg-white text-black font-black py-5 rounded-2xl hover:bg-[#00AEEF] hover:text-white transition-all uppercase tracking-widest shadow-2xl"
+        >
+          Get Started
+        </Link>
+      </div>
     </main>
   );
 }
