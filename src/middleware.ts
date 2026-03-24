@@ -1,44 +1,62 @@
-'use server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
-
-export async function login(formData: FormData) {
-  const supabase = await createClient()
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-  if (error) {
-    console.error('Login error:', error.message)
-    redirect('/login?error=Invalid Credentials')
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
-}
-
-export async function signup(formData: FormData) {
-  const supabase = await createClient()
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      // UPDATED TO YOUR NEW DOMAIN
-      emailRedirectTo: `https://agentlynxx.com/auth/callback`,
+/**
+ * THE MIDDLEWARE FUNCTION
+ * This must be named 'middleware' for Next.js to find it.
+ */
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
     },
   })
 
-  if (error) {
-    console.error('Signup error:', error.message)
-    redirect('/login?error=Signup Failed')
-  }
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({ name, value, ...options })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({ name, value: '', ...options })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  // This refreshes the session if it's expired
+  await supabase.auth.getUser()
+
+  return response
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files (svg, png, etc)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }
