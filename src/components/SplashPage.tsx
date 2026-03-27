@@ -50,7 +50,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
         </div>
 
-        {/* --- LAYER 2: THE HEADER (Tight to Viewport) --- */}
+        {/* --- LAYER 2: THE HEADER (Tight to top) --- */}
         <div className="relative z-30 w-full px-8 pt-6 flex flex-col items-center text-center">
             {profile.company_logo && (
               <img src={profile.company_logo} className="h-20 w-auto object-contain mb-2 filter drop-shadow-2xl" alt="Brokerage" />
@@ -74,7 +74,7 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </div>
 
-        {/* --- LAYER 3: THE AGENT (ABSOLUTE BOTTOM - IMMERSIVE) --- */}
+        {/* --- LAYER 3: THE AGENT (Lowered closer to bottom) --- */}
         <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center">
           {profile.avatar_url && (
             <img 
@@ -82,7 +82,7 @@ export default function SplashPage({ profile }: { profile: any }) {
               onLoad={handleImageLoad}
               className={`
                 max-w-none transition-all duration-1000 origin-bottom w-full
-                ${isTall ? "scale-[1.5] mb-[-5px]" : "mb-[200px] scale-[1.1]"}
+                ${isTall ? "scale-[1.5] mb-[-10px]" : "mb-[145px] scale-[1.1]"}
               `}
               style={{ 
                 maskImage: 'linear-gradient(to top, transparent 0%, black 15%)', 
@@ -93,8 +93,8 @@ export default function SplashPage({ profile }: { profile: any }) {
           )}
         </div>
 
-        {/* --- LAYER 4: THE DOCK (TRANSPARENT BUTTON & FOOTER) --- */}
-        <div className="relative z-30 mt-auto w-full px-8 pb-4 pt-20 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
+        {/* --- LAYER 4: THE DOCK (Bold License & Glass Button) --- */}
+        <div className="relative z-30 mt-auto w-full px-8 pb-4 pt-16 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
             
             <a 
               href={getCtaHref(profile.cta_url, profile.cta_text)} 
@@ -104,16 +104,16 @@ export default function SplashPage({ profile }: { profile: any }) {
               <ExternalLink className="w-5 h-5 opacity-60" />
             </a>
 
-            {/* THE FOOTER (3-COLUMN ALIGNMENT) */}
+            {/* THE FOOTER (High Contrast 3-Column) */}
             <div className="w-full grid grid-cols-3 items-center pb-4 px-2">
-               {/* Left: Equal Housing Image */}
+               {/* Left: Equal Housing */}
                <div className="flex justify-start">
                  <img src="/equal-housing.png" className="h-10 w-auto brightness-200" alt="" />
                </div>
 
-               {/* Center: License Number */}
-               <div className="text-center">
-                 <span className="text-[10px] font-bold uppercase tracking-widest text-white whitespace-nowrap">
+               {/* Center: Larger License Number */}
+               <div className="text-center px-1">
+                 <span className="text-[12px] font-black uppercase tracking-widest text-white whitespace-nowrap drop-shadow-md">
                    NV: {profile.license_number || 'REQUIRED'}
                  </span>
                </div>
