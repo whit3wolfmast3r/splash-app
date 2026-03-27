@@ -5,6 +5,7 @@ import {
   Instagram, Facebook, Youtube, Video, Home, ExternalLink, 
   Linkedin, MessageCircle, Phone, Mail, Globe 
 } from 'lucide-react';
+import { trackEvent } from '@/app/actions/analytics'; // Fixed import position
 
 const SOCIAL_MAP: Record<string, any> = {
   instagram: { icon: Instagram, color: 'hover:text-[#00AEEF]' },
@@ -38,9 +39,8 @@ export default function SplashPage({ profile }: { profile: any }) {
 
   return (
     <div className="min-h-screen w-full bg-[#050505] flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
-      <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
+      <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden transition-all duration-500">
         
-        {/* --- LAYER 1: VIDEO BACKGROUND --- */}
         <div className="absolute inset-0 z-0">
           {profile.video_bg_url && (
             <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-40">
@@ -50,16 +50,11 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
         </div>
 
-        {/* --- LAYER 2: THE HEADER (Tight to top) --- */}
         <div className="relative z-30 w-full px-8 pt-6 flex flex-col items-center text-center">
             {profile.company_logo && (
               <img src={profile.company_logo} className="h-20 w-auto object-contain mb-2 filter drop-shadow-2xl" alt="Brokerage" />
             )}
-            
-            <h1 className="text-4xl font-extralight tracking-tight text-white drop-shadow-lg mb-4">
-              {profile.agent_name}
-            </h1>
-            
+            <h1 className="text-4xl font-extralight tracking-tight text-white drop-shadow-lg mb-4">{profile.agent_name}</h1>
             <div className="flex justify-center gap-6">
                {profile.social_links && Object.entries(profile.social_links).slice(0, 4).map(([platform, url]) => {
                  const Config = SOCIAL_MAP[platform];
@@ -74,16 +69,12 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </div>
 
-        {/* --- LAYER 3: THE AGENT (Lowered closer to bottom) --- */}
         <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center">
           {profile.avatar_url && (
             <img 
               src={profile.avatar_url} 
               onLoad={handleImageLoad}
-              className={`
-                max-w-none transition-all duration-1000 origin-bottom w-full
-                ${isTall ? "scale-[1.5] mb-[-10px]" : "mb-[145px] scale-[1.1]"}
-              `}
+              className={`max-w-none transition-all duration-1000 origin-bottom w-full ${isTall ? "scale-[1.5] mb-[-10px]" : "mb-[145px] scale-[1.1]"}`}
               style={{ 
                 maskImage: 'linear-gradient(to top, transparent 0%, black 15%)', 
                 WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%)' 
@@ -93,32 +84,25 @@ export default function SplashPage({ profile }: { profile: any }) {
           )}
         </div>
 
-        {/* --- LAYER 4: THE DOCK (Bold License & Glass Button) --- */}
         <div className="relative z-30 mt-auto w-full px-8 pb-4 pt-16 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
-            
             <a 
               href={getCtaHref(profile.cta_url, profile.cta_text)} 
+              onClick={() => trackEvent(profile.id, 'click')} // Added Analytics Tracking
               className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-widest mb-8"
             >
               {profile.cta_text}
               <ExternalLink className="w-5 h-5 opacity-60" />
             </a>
 
-            {/* THE FOOTER (High Contrast 3-Column) */}
             <div className="w-full grid grid-cols-3 items-center pb-4 px-2">
-               {/* Left: Equal Housing */}
                <div className="flex justify-start">
                  <img src="/equal-housing.png" className="h-10 w-auto brightness-200" alt="" />
                </div>
-
-               {/* Center: Larger License Number */}
                <div className="text-center px-1">
                  <span className="text-[12px] font-black uppercase tracking-widest text-white whitespace-nowrap drop-shadow-md">
                    NV: {profile.license_number || 'REQUIRED'}
                  </span>
                </div>
-
-               {/* Right: agent Lynxx Signature */}
                <div className="flex justify-end">
                  <div className="flex flex-col items-center gap-1">
                    <img src="/lynxx-footer.png" className="h-10 w-auto" alt="" />
@@ -129,20 +113,7 @@ export default function SplashPage({ profile }: { profile: any }) {
                </div>
             </div>
         </div>
-
       </div>
     </div>
   );
-  // ... imports ...
-import { trackEvent } from '@/app/actions/analytics'
-
-// Inside SplashPage component:
-<a 
-  href={getCtaHref(profile.cta_url, profile.cta_text)} 
-  onClick={() => trackEvent(profile.id, 'click')} // ADD THIS LINE
-  className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-widest mb-8"
->
-  {profile.cta_text}
-  <ExternalLink className="w-5 h-5 opacity-60" />
-</a>
 }
