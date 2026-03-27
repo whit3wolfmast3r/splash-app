@@ -133,4 +133,16 @@ export default function SplashPage({ profile }: { profile: any }) {
       </div>
     </div>
   );
+  // ... imports ...
+import { trackEvent } from '@/app/actions/analytics'
+
+// Inside SplashPage component:
+<a 
+  href={getCtaHref(profile.cta_url, profile.cta_text)} 
+  onClick={() => trackEvent(profile.id, 'click')} // ADD THIS LINE
+  className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-widest mb-8"
+>
+  {profile.cta_text}
+  <ExternalLink className="w-5 h-5 opacity-60" />
+</a>
 }

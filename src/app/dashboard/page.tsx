@@ -3,83 +3,57 @@ import { redirect } from 'next/navigation'
 import DashboardForm from '@/components/DashboardForm'
 
 export default async function DashboardPage() {
-  try {
-    const supabase = await createClient()
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-    // 1. Get User
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) redirect('/login')
+  // 1. Fetch Profile
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+  
+  // 2. Fetch Analytics Counts
+  const { count: viewCount } = await supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'view')
+  const { count: clickCount } = await supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'click')
 
-    // 2. Get Profile
-    const { data: profile, error: dbError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
+  if (!profile) redirect('/login')
 
-    if (dbError) throw new Error(dbError.message)
+  return (
+    <div className="min-h-screen bg-zinc-50 p-4 md:p-12 font-sans">
+      <div className="max-w-2xl mx-auto">
+        
+        {/* HEADER */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-zinc-900 tracking-tighter italic uppercase">
+              agent <span className="text-[#00AEEF] normal-case">Lynxx</span> <span className="text-zinc-300 ml-2 not-italic">Admin</span>
+            </h1>
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Editing @{profile.username}</p>
+          </div>
+          <div className="flex gap-3">
+            <a href={`/${profile.username}`} target="_blank" className="px-6 py-3 bg-white border border-zinc-200 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">View Page</a>
+            <form action="/auth/signout" method="post">
+               <button className="px-6 py-3 bg-zinc-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Sign Out</button>
+            </form>
+          </div>
+        </header>
 
-    // 3. If profile is missing (SQL trigger didn't run)
-    if (!profile) {
-      return (
-        <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-center">
-          <div className="max-w-sm text-white">
-            <h1 className="text-xl font-black italic uppercase tracking-tighter">Profile Not Found</h1>
-            <p className="text-zinc-400 mb-6 text-sm mt-2">We couldn't locate your agent record.</p>
-            <a href="/login" className="text-[#00AEEF] underline font-bold uppercase tracking-widest text-xs">Log out and try again</a>
+        {/* ANALYTICS CARDS */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white p-6 rounded-[2rem] border border-zinc-100 shadow-sm text-center">
+            <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Total Views</span>
+            <span className="text-3xl font-black text-zinc-900">{viewCount || 0}</span>
+          </div>
+          <div className="bg-white p-6 rounded-[2rem] border border-zinc-100 shadow-sm text-center">
+            <span className="block text-[10px] font-black uppercase tracking-widest text-[#00AEEF] mb-1">Button Clicks</span>
+            <span className="text-3xl font-black text-zinc-900">{clickCount || 0}</span>
           </div>
         </div>
-      )
-    }
 
-    // 4. Prepare Safe Data
-    const safeProfile = {
-      ...profile,
-      username: profile.username || '',
-      agent_name: profile.agent_name || 'New Agent',
-      avatar_url: (profile.avatar_url === 'EMPTY' || !profile.avatar_url) ? '' : profile.avatar_url,
-      social_links: (profile.social_links && !Array.isArray(profile.social_links)) ? profile.social_links : {},
-    }
-
-    return (
-      <div className="min-h-screen bg-zinc-50 p-4 md:p-12 font-sans">
-        <div className="max-w-2xl mx-auto">
-          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-            <div>
-              <h1 className="text-3xl font-black text-zinc-900 tracking-tighter italic uppercase">
-                agent <span className="text-[#00AEEF] normal-case">Lynxx</span> <span className="text-zinc-300 ml-2 not-italic">Admin</span>
-              </h1>
-              <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">
-                Editing page for @{safeProfile.username}
-              </p>
-            </div>
-            <a 
-              href={`/${safeProfile.username}`} 
-              target="_blank" 
-              className="px-8 py-3 bg-white border border-zinc-200 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm hover:bg-zinc-50 transition active:scale-95"
-            >
-              View Live Page
-            </a>
-          </header>
-
-          <div className="bg-white rounded-[3rem] shadow-2xl shadow-zinc-200/50 border border-zinc-100 p-6 md:p-12">
-             <DashboardForm profile={safeProfile} />
-          </div>
-          
-          <footer className="mt-12 text-center">
-            <p className="text-zinc-300 text-[9px] font-bold uppercase tracking-[0.3em]">
-              Connected as {user.email}
-            </p>
-          </footer>
+        {/* THE FORM */}
+        <div className="bg-white rounded-[3rem] shadow-2xl shadow-zinc-200/50 border border-zinc-100 p-6 md:p-12">
+           <DashboardForm profile={profile} />
         </div>
+
       </div>
-    )
-  } catch (error: any) {
-    return (
-      <div className="p-10 bg-black text-red-500 min-h-screen font-mono text-xs">
-        <h1 className="text-lg font-bold mb-2 uppercase">System Load Error</h1>
-        <p>{error.message}</p>
-      </div>
-    )
-  }
+    </div>
+  )
 }
