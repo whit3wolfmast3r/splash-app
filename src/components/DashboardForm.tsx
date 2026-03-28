@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { updateProfile } from '@/app/dashboard/actions'
-import { Upload, Link, Phone, Mail, MessageSquare, BarChart3, Camera, Building2 } from 'lucide-react'
+import { Upload, Link, Phone, Mail, MessageSquare, Camera, Building2 } from 'lucide-react'
 
 const VIDEO_THEMES = [
   { name: 'Modern Estate (Video 4)', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video4.mp4' },
@@ -26,7 +26,26 @@ const SOCIAL_NETWORKS = [
 export default function DashboardForm({ profile, viewCount, clickCount }: { profile: any, viewCount: number, clickCount: number }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [ctaType, setCtaType] = useState('link')
+  
+  // Detection for initial CTA type
+  const initialType = profile?.cta_url?.startsWith('tel:') ? 'tel' : 
+                     profile?.cta_url?.startsWith('sms:') ? 'sms' : 
+                     profile?.cta_url?.startsWith('mailto:') ? 'mailto' : 'link';
+  
+  const [ctaType, setCtaType] = useState(initialType)
+
+  // Local previews for better UX
+  const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url)
+  const [logoPreview, setLogoPreview] = useState(profile?.company_logo)
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'logo') => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const url = URL.createObjectURL(file)
+      if (type === 'avatar') setAvatarPreview(url)
+      else setLogoPreview(url)
+    }
+  }
 
   async function handleSubmit(formData: FormData) {
     setLoading(true)
@@ -49,6 +68,10 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
   return (
     <form action={handleSubmit} encType="multipart/form-data" className="space-y-12 pb-20 text-white">
       
+      {/* 1. HIDDEN PERSISTENCE FIELDS (Crucial Fix) */}
+      <input type="hidden" name="current_avatar_url" value={profile?.avatar_url || ''} />
+      <input type="hidden" name="current_company_logo" value={profile?.company_logo || ''} />
+
       {/* 📊 ANALYTICS HUD */}
       <div className="grid grid-cols-2 gap-4">
         {[
@@ -72,27 +95,37 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
       <section className="space-y-4">
         <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF] px-1">Visual Branding</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
           {/* Headshot Card */}
           <div className="relative group bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center transition-all hover:border-[#00AEEF]/50">
             <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 border border-white/20 bg-black">
-              {profile?.avatar_url ? <img src={profile.avatar_url} className="w-full h-full object-cover" /> : <Camera className="w-full h-full p-6 text-zinc-700" />}
+              {avatarPreview ? (
+                <img src={avatarPreview} className="w-full h-full object-cover" />
+              ) : (
+                <Camera className="w-full h-full p-6 text-zinc-700" />
+              )}
             </div>
-            <label className="cursor-pointer bg-white text-black px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#00AEEF] transition-colors">
-              Update Headshot
-              <input type="file" name="headshot" accept="image/png" className="hidden" />
+            <label className="cursor-pointer bg-white text-black px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#00AEEF] hover:text-white transition-colors">
+              {profile?.avatar_url ? 'Change Headshot' : 'Upload Headshot'}
+              <input type="file" name="headshot" accept="image/png" className="hidden" onChange={(e) => handleFileChange(e, 'avatar')} />
             </label>
-            <p className="text-[9px] text-zinc-500 mt-3 uppercase tracking-tighter font-bold">Transparent PNG Recommended (5:6 Ratio)</p>
+            <p className="text-[9px] text-zinc-500 mt-3 uppercase tracking-tighter font-bold">Transparent PNG (5:6 Ratio)</p>
           </div>
 
           {/* Logo Card */}
           <div className="relative group bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center transition-all hover:border-[#00AEEF]/50">
             <div className="h-24 flex items-center justify-center mb-4">
-              {profile?.company_logo ? <img src={profile.company_logo} className="max-h-16 w-auto object-contain" /> : <Building2 className="w-12 h-12 text-zinc-700" />}
+              {logoPreview ? (
+                <img src={logoPreview} className="max-h-16 w-auto object-contain" />
+              ) : (
+                <Building2 className="w-12 h-12 text-zinc-700" />
+              )}
             </div>
             <label className="cursor-pointer border border-white/20 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
-              Update Logo
-              <input type="file" name="company_logo_file" accept="image/png" className="hidden" />
+              {profile?.company_logo ? 'Change Logo' : 'Upload Logo'}
+              <input type="file" name="company_logo_file" accept="image/png" className="hidden" onChange={(e) => handleFileChange(e, 'logo')} />
             </label>
+            <p className="text-[9px] text-zinc-500 mt-3 uppercase tracking-tighter font-bold">White Logo Recommended</p>
           </div>
         </div>
       </section>
@@ -130,6 +163,7 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
         <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Primary Action Button</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <select 
+            value={ctaType}
             onChange={(e) => setCtaType(e.target.value)}
             name="cta_type_select"
             className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none font-bold text-white appearance-none cursor-pointer"
@@ -171,21 +205,6 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
               />
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* 📈 ADVANCED ANALYTICS (Add these to your DB/actions if you want them saved) */}
-      <section className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">External Analytics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Google Analytics ID</label>
-              <input name="ga_id" placeholder="G-XXXXXXXXXX" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
-           </div>
-           <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Microsoft Clarity ID</label>
-              <input name="clarity_id" placeholder="8-character code" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
-           </div>
         </div>
       </section>
 
