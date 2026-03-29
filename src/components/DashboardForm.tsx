@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { updateProfile } from '@/app/dashboard/actions'
-import { Link, Phone, Mail, MessageSquare, Camera, Building2, BarChart3 } from 'lucide-react'
+import { Link, Phone, Mail, MessageSquare, Camera, Building2, BarChart3, ExternalLink } from 'lucide-react'
 
 const VIDEO_THEMES = [
   { name: 'Modern Estate (Video 4)', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video4.mp4' },
@@ -32,7 +32,6 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url)
   const [logoPreview, setLogoPreview] = useState(profile?.company_logo)
 
-  // Robustly strips prefixes for clean UI display
   const cleanUrlDisplay = (url: string) => {
     if (!url) return '';
     return url.replace(/^(tel:|sms:|mailto:)/, '');
@@ -51,7 +50,6 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
     setLoading(true)
     setMessage('')
     
-    // FIX: Clear existing prefixes and apply the correct one based on the current dropdown
     const rawInput = formData.get('cta_url') as string
     const strippedValue = rawInput.replace(/^(tel:|sms:|mailto:)/, '').trim()
     
@@ -75,28 +73,67 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
       <input type="hidden" name="current_avatar_url" value={profile?.avatar_url || ''} />
       <input type="hidden" name="current_company_logo" value={profile?.company_logo || ''} />
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Views</p>
-          <p className="text-4xl font-light tracking-tighter">{viewCount || 0}</p>
+      {/* STATS & LIVE LINK */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between bg-[#00AEEF]/10 border border-[#00AEEF]/30 rounded-2xl p-4">
+            <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-[#00AEEF] rounded-full animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-white">Live URL:</span>
+                <span className="text-[10px] font-bold text-[#00AEEF]">agentlynxx.com/{profile?.username}</span>
+            </div>
+            <a href={`/${profile?.username}`} target="_blank" className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-[#00AEEF]">
+                Visit <ExternalLink size={10} />
+            </a>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00AEEF] mb-1">Clicks</p>
-          <p className="text-4xl font-light tracking-tighter text-[#00AEEF]">{clickCount || 0}</p>
+
+        <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Views</p>
+            <p className="text-4xl font-light tracking-tighter">{viewCount || 0}</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00AEEF] mb-1">Clicks</p>
+            <p className="text-4xl font-light tracking-tighter text-[#00AEEF]">{clickCount || 0}</p>
+            </div>
         </div>
       </div>
 
       {message && (
-        <div className="p-4 rounded-2xl text-center text-xs font-black uppercase tracking-widest bg-[#00AEEF] text-black animate-pulse">
+        <div className="p-4 rounded-2xl text-center text-xs font-black uppercase tracking-widest bg-[#00AEEF] text-black">
           {message}
         </div>
       )}
+
+      {/* AGENT IDENTITY (MOVED TO TOP) */}
+      <section className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Agent Profile</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500 ml-2">Display Name</label>
+            <input name="agent_name" defaultValue={profile?.agent_name} placeholder="First Last" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500 ml-2">Public Username (URL)</label>
+            <input name="username" defaultValue={profile?.username} required className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500 ml-2">License Number</label>
+            <input name="license_number" defaultValue={profile?.license_number} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500 ml-2">Video Background</label>
+            <select name="video_bg_url" defaultValue={profile?.video_bg_url} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] appearance-none">
+              {VIDEO_THEMES.map(v => <option key={v.url} value={v.url}>{v.name}</option>)}
+            </select>
+          </div>
+        </div>
+      </section>
 
       {/* ASSETS */}
       <section className="space-y-4">
         <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Branding Assets</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center">
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center text-center">
             <div className="w-32 aspect-[5/6] rounded-2xl overflow-hidden mb-4 border border-white/20 bg-black">
               {avatarPreview ? <img src={avatarPreview} className="w-full h-full object-cover" /> : <Camera className="w-full h-full p-10 text-zinc-700" />}
             </div>
