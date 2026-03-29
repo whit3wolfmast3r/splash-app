@@ -8,28 +8,32 @@ export async function updateProfile(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  // 1. Get existing URLs from the hidden inputs in the form
+  // Preserve existing assets from hidden fields
   let avatar_url = formData.get('current_avatar_url') as string
   let company_logo = formData.get('current_company_logo') as string
 
-  // 2. Helper to handle uploads
-  const upload = async (file: File, bucket: string) => {
+  const uploadAsset = async (file: File, bucket: string) => {
     if (!file || file.size === 0) return null
-    const name = `${user.id}/${Date.now()}-${file.name}`
+    const name = `${user.id}/${Date.now()}-${file.name.replace(/\s/g, '_')}`
     const { error } = await supabase.storage.from(bucket).upload(name, file)
     if (error) throw error
     return supabase.storage.from(bucket).getPublicUrl(name).data.publicUrl
   }
 
   try {
-    // 3. Process new files only if they were selected
-    const newAvatar = await upload(formData.get('headshot') as File, 'avatars')
+    const newAvatar = await uploadAsset(formData.get('headshot') as File, 'avatars')
     if (newAvatar) avatar_url = newAvatar
 
-    const newLogo = await upload(formData.get('company_logo_file') as File, 'logos')
+    const newLogo = await uploadAsset(formData.get('company_logo_file') as File, 'logos')
     if (newLogo) company_logo = newLogo
 
-    // 4. Update the database
+    const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow', 'wechat']
+    const social_links: any = {}
+    networks.forEach(net => {
+      const val = formData.get(`social_${net}`)
+      if (val) social_links[net] = val
+    })
+
     const { error: dbError } = await supabase
       .from('profiles')
       .update({
@@ -41,13 +45,7 @@ export async function updateProfile(formData: FormData) {
         video_bg_url: formData.get('video_bg_url'),
         avatar_url,
         company_logo,
-        social_links: {
-          instagram: formData.get('social_instagram'),
-          facebook: formData.get('social_facebook'),
-          tiktok: formData.get('social_tiktok'),
-          youtube: formData.get('social_youtube'),
-          zillow: formData.get('social_zillow'),
-        },
+        social_links,
         updated_at: new Date().toISOString()
       })
       .eq('id', user.id)
@@ -57,7 +55,6 @@ export async function updateProfile(formData: FormData) {
     revalidatePath('/dashboard')
     revalidatePath(`/${formData.get('username')}`)
     return { success: true }
-
   } catch (err: any) {
     return { error: err.message }
   }
