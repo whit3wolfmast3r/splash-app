@@ -2,20 +2,29 @@
 
 import React, { useState } from 'react';
 import { 
-  Instagram, Facebook, Youtube, Video, Home, ExternalLink, 
-  Linkedin, MessageCircle, Phone, Mail, Globe 
+  Instagram, Facebook, Youtube, Video, ExternalLink, 
+  Linkedin, MessageCircle, Phone, Globe 
 } from 'lucide-react';
 import { trackEvent } from '@/app/actions/analytics';
 
+// --- Surgical Polish: Brand Icons ---
+const ZillowIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current"><path d="M19.34 11.29l-6.83-6.84a.73.73 0 00-1.03 0l-6.84 6.84a.24.24 0 00.17.41h2.24v6.86c0 .13.11.24.24.24h3.7c.13 0 .24-.11.24-.24v-3.52c0-.13.11-.24.24-.24h1.4c.13 0 .24.11.24.24v3.52c0 .13.11.24.24.24h3.7c.13 0 .24-.11.24-.24V11.7h2.24a.24.24 0 00.17-.41z"/></svg>
+);
+
+const EqualHousingIcon = () => (
+  <svg className="h-8 w-auto fill-white opacity-80" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 14c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg>
+);
+
 const SOCIAL_MAP: Record<string, any> = {
-  instagram: { icon: Instagram, color: 'hover:text-[#00AEEF]' },
-  facebook: { icon: Facebook, color: 'hover:text-[#00AEEF]' },
-  tiktok: { icon: Video, color: 'hover:text-[#00AEEF]' },
-  youtube: { icon: Youtube, color: 'hover:text-[#00AEEF]' },
-  linkedin: { icon: Linkedin, color: 'hover:text-[#00AEEF]' },
-  whatsapp: { icon: MessageCircle, color: 'hover:text-[#00AEEF]' },
-  zillow: { icon: Home, color: 'hover:text-[#00AEEF]' },
-  wechat: { icon: Globe, color: 'hover:text-[#00AEEF]' },
+  instagram: { icon: Instagram },
+  facebook: { icon: Facebook },
+  tiktok: { icon: Video },
+  youtube: { icon: Youtube },
+  linkedin: { icon: Linkedin },
+  whatsapp: { icon: MessageCircle },
+  zillow: { icon: ZillowIcon },
+  wechat: { icon: Globe },
 };
 
 export default function SplashPage({ profile }: { profile: any }) {
@@ -28,10 +37,7 @@ export default function SplashPage({ profile }: { profile: any }) {
   
   const getCtaHref = (url: string, text: string) => {
     if (!url) return '#';
-    const clean = url.replace(/[-+() ]/g, '');
-    if (text === 'Call Me') return `tel:${clean}`;
-    if (text === 'Text Me') return `sms:${clean}`;
-    if (text === 'Email Me') return `mailto:${url}`;
+    if (url.startsWith('tel:') || url.startsWith('sms:') || url.startsWith('mailto:')) return url;
     return url.startsWith('http') ? url : `https://${url}`;
   };
 
@@ -41,7 +47,7 @@ export default function SplashPage({ profile }: { profile: any }) {
     <div className="min-h-screen w-full bg-[#050505] flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
         
-        {/* --- LAYER 1: VIDEO BACKGROUND --- */}
+        {/* VIDEO BACKGROUND */}
         <div className="absolute inset-0 z-0">
           {profile.video_bg_url && (
             <video autoPlay muted loop playsInline key={profile.video_bg_url} className="h-full w-full object-cover opacity-40">
@@ -51,7 +57,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black" />
         </div>
 
-        {/* --- LAYER 2: THE HEADER (Tight to Top) --- */}
+        {/* HEADER (Logo & Name) */}
         <div className="relative z-30 w-full px-8 pt-6 flex flex-col items-center text-center">
             {profile.company_logo && (
               <img src={profile.company_logo} className="h-20 w-auto object-contain mb-2 filter drop-shadow-2xl" alt="Brokerage" />
@@ -64,10 +70,9 @@ export default function SplashPage({ profile }: { profile: any }) {
             <div className="flex justify-center gap-6">
                {profile.social_links && Object.entries(profile.social_links).slice(0, 4).map(([platform, url]) => {
                  const Config = SOCIAL_MAP[platform];
-                 const href = url as string;
-                 if (!Config || !href) return null;
+                 if (!Config || !url) return null;
                  return (
-                   <a key={platform} href={href} target="_blank" rel="noreferrer" className="transition-all duration-300 text-white hover:text-[#00AEEF] hover:scale-110">
+                   <a key={platform} href={url as string} target="_blank" rel="noreferrer" className="transition-all duration-300 text-white hover:text-[#00AEEF] hover:scale-110">
                      <Config.icon className="w-7 h-7 stroke-[2px]" />
                    </a>
                  );
@@ -75,7 +80,7 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </div>
 
-        {/* --- LAYER 3: THE AGENT (ABSOLUTE BOTTOM ANCHOR) --- */}
+        {/* THE AGENT */}
         <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center">
           {profile.avatar_url && (
             <img 
@@ -94,7 +99,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           )}
         </div>
 
-        {/* --- LAYER 4: THE DOCK (Zero-Gap Connected) --- */}
+        {/* DOCK & FOOTER */}
         <div className="relative z-30 mt-auto w-full px-8 pb-4 pt-16 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
             
             <a 
@@ -106,32 +111,28 @@ export default function SplashPage({ profile }: { profile: any }) {
               <ExternalLink className="w-5 h-5 opacity-60" />
             </a>
 
-            {/* THE FOOTER (3-COLUMN HIGH CONTRAST) */}
+            {/* THE FOOTER (Fixed Polish) */}
             <div className="w-full grid grid-cols-3 items-center pb-4 px-2">
-               {/* Left: Equal Housing Image */}
                <div className="flex justify-start">
-                 <img src="/equal-housing.png" className="h-10 w-auto brightness-200" alt="" />
+                 <EqualHousingIcon />
                </div>
 
-               {/* Center: License Number */}
                <div className="text-center px-1">
-                 <span className="text-[11px] font-black uppercase tracking-widest text-white whitespace-nowrap drop-shadow-md">
+                 <span className="text-[11px] font-black uppercase tracking-widest text-white/40 whitespace-nowrap drop-shadow-md">
                    NV: {profile.license_number}
                  </span>
                </div>
 
-               {/* Right: agent Lynxx Signature */}
                <div className="flex justify-end">
-                 <div className="flex flex-col items-center gap-1">
-                   <img src="/lynxx-logo.png" className="h-10 w-auto" alt="" />
-                   <div className="flex items-center gap-0.5 text-[9px] lowercase font-light text-white">
-                      agent<span className="uppercase font-bold text-[#00AEEF]">Lynxx</span>
+                 <div className="flex flex-col items-end">
+                   <div className="flex items-center gap-0.5 text-[10px] lowercase font-light text-white/50">
+                      agent<span className="uppercase font-bold text-[#00AEEF] tracking-tighter">Lynxx</span>
                    </div>
+                   <div className="w-6 h-1 bg-[#00AEEF] rounded-full mt-1 opacity-50" />
                  </div>
                </div>
             </div>
         </div>
-
       </div>
     </div>
   );

@@ -20,10 +20,14 @@ export async function updateProfile(formData: FormData) {
   }
 
   try {
-    const newAvatar = await uploadAsset(formData.get('headshot') as File, 'avatars')
+    const headshotFile = formData.get('headshot') as File
+    const logoFile = formData.get('company_logo_file') as File
+
+    const newAvatar = await uploadAsset(headshotFile, 'avatars')
     if (newAvatar) avatar_url = newAvatar
 
-    const newLogo = await uploadAsset(formData.get('company_logo_file') as File, 'avatars') // Keeping in avatars for unified public access
+    // FIXED: Now uses your 'logos' bucket from Supabase
+    const newLogo = await uploadAsset(logoFile, 'logos') 
     if (newLogo) company_logo = newLogo
 
     const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow', 'wechat']
