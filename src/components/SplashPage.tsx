@@ -1,94 +1,138 @@
 'use client'
 
-import React from 'react'
-import { ExternalLink, Instagram, Facebook, Youtube, Linkedin } from 'lucide-react'
+import React, { useState } from 'react';
+import { 
+  Instagram, Facebook, Youtube, Video, Home, ExternalLink, 
+  Linkedin, MessageCircle, Phone, Mail, Globe 
+} from 'lucide-react';
+import { trackEvent } from '@/app/actions/analytics';
 
-// Brand Specific Icons
-const ZillowIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M19.34 11.29l-6.83-6.84a.73.73 0 00-1.03 0l-6.84 6.84a.24.24 0 00.17.41h2.24v6.86c0 .13.11.24.24.24h3.7c.13 0 .24-.11.24-.24v-3.52c0-.13.11-.24.24-.24h1.4c.13 0 .24.11.24.24v3.52c0 .13.11.24.24.24h3.7c.13 0 .24-.11.24-.24V11.7h2.24a.24.24 0 00.17-.41z"/></svg>
-)
+const SOCIAL_MAP: Record<string, any> = {
+  instagram: { icon: Instagram, color: 'hover:text-[#00AEEF]' },
+  facebook: { icon: Facebook, color: 'hover:text-[#00AEEF]' },
+  tiktok: { icon: Video, color: 'hover:text-[#00AEEF]' },
+  youtube: { icon: Youtube, color: 'hover:text-[#00AEEF]' },
+  linkedin: { icon: Linkedin, color: 'hover:text-[#00AEEF]' },
+  whatsapp: { icon: MessageCircle, color: 'hover:text-[#00AEEF]' },
+  zillow: { icon: Home, color: 'hover:text-[#00AEEF]' },
+  wechat: { icon: Globe, color: 'hover:text-[#00AEEF]' },
+};
 
 export default function SplashPage({ profile }: { profile: any }) {
-  const social = profile.social_links || {}
+  const [ratio, setRatio] = useState(1);
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    setRatio(naturalHeight / naturalWidth);
+  };
   
-  const getIcon = (net: string) => {
-    switch(net.toLowerCase()) {
-      case 'instagram': return <Instagram size={20} />;
-      case 'facebook': return <Facebook size={20} />;
-      case 'youtube': return <Youtube size={20} />;
-      case 'linkedin': return <Linkedin size={20} />;
-      case 'zillow': return <ZillowIcon />;
-      default: return <ExternalLink size={20} />;
-    }
-  }
+  const getCtaHref = (url: string, text: string) => {
+    if (!url) return '#';
+    const clean = url.replace(/[-+() ]/g, '');
+    if (text === 'Call Me') return `tel:${clean}`;
+    if (text === 'Text Me') return `sms:${clean}`;
+    if (text === 'Email Me') return `mailto:${url}`;
+    return url.startsWith('http') ? url : `https://${url}`;
+  };
+
+  const isTall = ratio > 1.2;
 
   return (
-    <main className="relative h-screen w-full bg-[#050505] overflow-hidden flex flex-col font-sans">
-      
-      {/* 🎥 VIDEO BG */}
-      <div className="absolute inset-0 z-0 bg-black">
-        <video autoPlay loop muted playsInline key={profile.video_bg_url} className="h-full w-full object-cover opacity-40">
-          <source src={profile.video_bg_url} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-[#050505]" />
-      </div>
-
-      {/* 🏗 TOP UI: LOGO & IDENTITY */}
-      <div className="relative z-30 flex flex-col items-center pt-12 px-6 text-center">
-        <div className="h-16 w-full flex items-center justify-center mb-6">
-          {profile.company_logo && (
-            <img src={profile.company_logo} alt="Brokerage" className="max-h-full max-w-[200px] object-contain drop-shadow-2xl" />
+    <div className="min-h-screen w-full bg-[#050505] flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
+      <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
+        
+        {/* --- LAYER 1: VIDEO BACKGROUND --- */}
+        <div className="absolute inset-0 z-0">
+          {profile.video_bg_url && (
+            <video autoPlay muted loop playsInline key={profile.video_bg_url} className="h-full w-full object-cover opacity-40">
+              <source src={profile.video_bg_url} type="video/mp4" />
+            </video>
           )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black" />
         </div>
 
-        <h1 className="text-3xl font-light tracking-[0.2em] text-white uppercase drop-shadow-md">
-          {profile.agent_name}
-        </h1>
-
-        <div className="flex gap-6 mt-6 text-white/50">
-          {Object.entries(social).map(([net, url]: any) => (
-            <a key={net} href={url} target="_blank" className="hover:text-[#00AEEF] transition-all">{getIcon(net)}</a>
-          ))}
+        {/* --- LAYER 2: THE HEADER (Tight to Top) --- */}
+        <div className="relative z-30 w-full px-8 pt-6 flex flex-col items-center text-center">
+            {profile.company_logo && (
+              <img src={profile.company_logo} className="h-20 w-auto object-contain mb-2 filter drop-shadow-2xl" alt="Brokerage" />
+            )}
+            
+            <h1 className="text-4xl font-extralight tracking-tight text-white drop-shadow-lg mb-4">
+              {profile.agent_name}
+            </h1>
+            
+            <div className="flex justify-center gap-6">
+               {profile.social_links && Object.entries(profile.social_links).slice(0, 4).map(([platform, url]) => {
+                 const Config = SOCIAL_MAP[platform];
+                 const href = url as string;
+                 if (!Config || !href) return null;
+                 return (
+                   <a key={platform} href={href} target="_blank" rel="noreferrer" className="transition-all duration-300 text-white hover:text-[#00AEEF] hover:scale-110">
+                     <Config.icon className="w-7 h-7 stroke-[2px]" />
+                   </a>
+                 );
+               })}
+            </div>
         </div>
-      </div>
 
-      {/* 🧍 THE AGENT (Pinned Floor Layout) */}
-      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center pointer-events-none">
-        <div className="relative transform translate-y-[20px] md:translate-y-[40px]">
+        {/* --- LAYER 3: THE AGENT (ABSOLUTE BOTTOM ANCHOR) --- */}
+        <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center">
           {profile.avatar_url && (
-            <img src={profile.avatar_url} alt="Agent" className="max-h-[82vh] w-auto object-contain select-none drop-shadow-[0_0_80px_rgba(0,0,0,0.9)]" />
+            <img 
+              src={profile.avatar_url} 
+              onLoad={handleImageLoad}
+              className={`
+                max-w-none transition-all duration-1000 origin-bottom w-full
+                ${isTall ? "scale-[1.5] mb-[-10px]" : "mb-[145px] scale-[1.1]"}
+              `}
+              style={{ 
+                maskImage: 'linear-gradient(to top, transparent 0%, black 15%)', 
+                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%)' 
+              }}
+              alt="" 
+            />
           )}
         </div>
-      </div>
 
-      {/* 🔘 CALL TO ACTION DOCK */}
-      <div className="absolute bottom-28 inset-x-0 z-40 px-6 flex justify-center">
-        <a href={profile.cta_url} className="group w-full max-w-[340px] rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-5 flex items-center justify-between hover:bg-white/10 transition-all pointer-events-auto">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white pl-4">
-            {profile.cta_text || 'Book Consultation'}
-          </span>
-          <div className="bg-[#00AEEF] p-2 rounded-lg">
-             <ExternalLink size={16} className="text-white" />
-          </div>
-        </a>
-      </div>
+        {/* --- LAYER 4: THE DOCK (Zero-Gap Connected) --- */}
+        <div className="relative z-30 mt-auto w-full px-8 pb-4 pt-16 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
+            
+            <a 
+              href={getCtaHref(profile.cta_url, profile.cta_text)} 
+              onClick={() => trackEvent(profile.id, 'click')}
+              className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-widest mb-8"
+            >
+              {profile.cta_text}
+              <ExternalLink className="w-5 h-5 opacity-60" />
+            </a>
 
-      {/* 🏁 THE "LEGAL GRID" FOOTER */}
-      <footer className="absolute bottom-0 inset-x-0 z-50 px-8 py-8">
-        <div className="max-w-md mx-auto grid grid-cols-3 items-center">
-          <div className="flex justify-start">
-            <svg className="w-6 h-6 fill-white opacity-40" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 14c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg>
-          </div>
-          <div className="text-center text-[8px] font-black uppercase tracking-widest text-white/30">
-            NV: {profile.license_number}
-          </div>
-          <div className="flex flex-col items-end">
-             <div className="flex items-center gap-0.5 text-[10px] lowercase font-light text-white/40">
-                agent<span className="uppercase font-bold text-[#00AEEF]">Lynxx</span>
-             </div>
-          </div>
+            {/* THE FOOTER (3-COLUMN HIGH CONTRAST) */}
+            <div className="w-full grid grid-cols-3 items-center pb-4 px-2">
+               {/* Left: Equal Housing Image */}
+               <div className="flex justify-start">
+                 <img src="/equal-housing.png" className="h-10 w-auto brightness-200" alt="" />
+               </div>
+
+               {/* Center: License Number */}
+               <div className="text-center px-1">
+                 <span className="text-[11px] font-black uppercase tracking-widest text-white whitespace-nowrap drop-shadow-md">
+                   NV: {profile.license_number}
+                 </span>
+               </div>
+
+               {/* Right: agent Lynxx Signature */}
+               <div className="flex justify-end">
+                 <div className="flex flex-col items-center gap-1">
+                   <img src="/lynxx-logo.png" className="h-10 w-auto" alt="" />
+                   <div className="flex items-center gap-0.5 text-[9px] lowercase font-light text-white">
+                      agent<span className="uppercase font-bold text-[#00AEEF]">Lynxx</span>
+                   </div>
+                 </div>
+               </div>
+            </div>
         </div>
-      </footer>
-    </main>
-  )
+
+      </div>
+    </div>
+  );
 }

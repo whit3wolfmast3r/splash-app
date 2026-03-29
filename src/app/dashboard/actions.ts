@@ -8,14 +8,13 @@ export async function updateProfile(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  // Preserve existing assets from hidden fields
   let avatar_url = formData.get('current_avatar_url') as string
   let company_logo = formData.get('current_company_logo') as string
 
   const uploadAsset = async (file: File, bucket: string) => {
-    if (!file || file.size === 0) return null
+    if (!file || file.size === 0 || file.name === 'undefined') return null
     const name = `${user.id}/${Date.now()}-${file.name.replace(/\s/g, '_')}`
-    const { error } = await supabase.storage.from(bucket).upload(name, file)
+    const { error } = await supabase.storage.from(bucket).upload(name, file, { upsert: true })
     if (error) throw error
     return supabase.storage.from(bucket).getPublicUrl(name).data.publicUrl
   }
@@ -24,7 +23,7 @@ export async function updateProfile(formData: FormData) {
     const newAvatar = await uploadAsset(formData.get('headshot') as File, 'avatars')
     if (newAvatar) avatar_url = newAvatar
 
-    const newLogo = await uploadAsset(formData.get('company_logo_file') as File, 'logos')
+    const newLogo = await uploadAsset(formData.get('company_logo_file') as File, 'avatars') // Keeping in avatars for unified public access
     if (newLogo) company_logo = newLogo
 
     const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow', 'wechat']
@@ -34,11 +33,13 @@ export async function updateProfile(formData: FormData) {
       if (val) social_links[net] = val
     })
 
+    const username = (formData.get('username') as string || '').toLowerCase().trim()
+
     const { error: dbError } = await supabase
       .from('profiles')
       .update({
         agent_name: formData.get('agent_name'),
-        username: (formData.get('username') as string || '').toLowerCase().trim(),
+        username: username,
         license_number: formData.get('license_number'),
         cta_text: formData.get('cta_text'),
         cta_url: formData.get('cta_url'),
@@ -53,7 +54,7 @@ export async function updateProfile(formData: FormData) {
     if (dbError) throw dbError
 
     revalidatePath('/dashboard')
-    revalidatePath(`/${formData.get('username')}`)
+    revalidatePath(`/${username}`)
     return { success: true }
   } catch (err: any) {
     return { error: err.message }

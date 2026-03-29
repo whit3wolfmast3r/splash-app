@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { updateProfile } from '@/app/dashboard/actions'
 import { Upload, Link, Phone, Mail, MessageSquare, Camera, Building2 } from 'lucide-react'
 
@@ -18,23 +18,17 @@ const CTA_TYPES = [
   { label: 'Email Me', value: 'mailto', icon: <Mail size={14}/>, placeholder: 'name@agency.com' },
 ]
 
-const SOCIAL_NETWORKS = [
-  'Instagram', 'Facebook', 'TikTok', 'YouTube', 
-  'LinkedIn', 'WhatsApp', 'Zillow', 'WeChat'
-]
+const SOCIAL_NETWORKS = ['Instagram', 'Facebook', 'TikTok', 'YouTube', 'LinkedIn', 'WhatsApp', 'Zillow', 'WeChat']
 
 export default function DashboardForm({ profile, viewCount, clickCount }: { profile: any, viewCount: number, clickCount: number }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   
-  // Detection for initial CTA type
   const initialType = profile?.cta_url?.startsWith('tel:') ? 'tel' : 
                      profile?.cta_url?.startsWith('sms:') ? 'sms' : 
                      profile?.cta_url?.startsWith('mailto:') ? 'mailto' : 'link';
   
   const [ctaType, setCtaType] = useState(initialType)
-
-  // Local previews for better UX
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url)
   const [logoPreview, setLogoPreview] = useState(profile?.company_logo)
 
@@ -51,7 +45,6 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
     setLoading(true)
     setMessage('')
     
-    // Auto-prefix logic for CTA
     const rawCtaUrl = formData.get('cta_url') as string
     if (ctaType !== 'link' && rawCtaUrl && !rawCtaUrl.startsWith(ctaType)) {
        formData.set('cta_url', `${ctaType}:${rawCtaUrl.replace(`${ctaType}:`, '')}`)
@@ -66,160 +59,104 @@ export default function DashboardForm({ profile, viewCount, clickCount }: { prof
   }
 
   return (
-    <form action={handleSubmit} encType="multipart/form-data" className="space-y-12 pb-20 text-white">
+    <form action={handleSubmit} encType="multipart/form-data" className="space-y-12 pb-20 text-white font-sans">
       
-      {/* 1. HIDDEN PERSISTENCE FIELDS (Crucial Fix) */}
       <input type="hidden" name="current_avatar_url" value={profile?.avatar_url || ''} />
       <input type="hidden" name="current_company_logo" value={profile?.company_logo || ''} />
 
-      {/* 📊 ANALYTICS HUD */}
       <div className="grid grid-cols-2 gap-4">
-        {[
-          { label: 'Total Views', val: viewCount, color: 'text-white' },
-          { label: 'Button Clicks', val: clickCount, color: 'text-[#00AEEF]' }
-        ].map((stat, i) => (
-          <div key={i} className="bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-6 text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">{stat.label}</p>
-            <p className={`text-4xl font-light tracking-tighter ${stat.color}`}>{stat.val}</p>
-          </div>
-        ))}
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Views</p>
+          <p className="text-4xl font-light tracking-tighter">{viewCount || 0}</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00AEEF] mb-1">Clicks</p>
+          <p className="text-4xl font-light tracking-tighter text-[#00AEEF]">{clickCount || 0}</p>
+        </div>
       </div>
 
       {message && (
-        <div className="p-4 rounded-2xl text-center text-xs font-black uppercase tracking-widest bg-[#00AEEF] text-black animate-pulse">
+        <div className="p-4 rounded-2xl text-center text-xs font-black uppercase tracking-widest bg-[#00AEEF] text-black">
           {message}
         </div>
       )}
 
-      {/* 📸 ASSET UPLOADS */}
+      {/* ASSET UPLOADS */}
       <section className="space-y-4">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF] px-1">Visual Branding</h3>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Branding Assets</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
-          {/* Headshot Card */}
-          <div className="relative group bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center transition-all hover:border-[#00AEEF]/50">
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center">
             <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 border border-white/20 bg-black">
-              {avatarPreview ? (
-                <img src={avatarPreview} className="w-full h-full object-cover" />
-              ) : (
-                <Camera className="w-full h-full p-6 text-zinc-700" />
-              )}
+              {avatarPreview ? <img src={avatarPreview} className="w-full h-full object-cover" /> : <Camera className="w-full h-full p-6 text-zinc-700" />}
             </div>
-            <label className="cursor-pointer bg-white text-black px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#00AEEF] hover:text-white transition-colors">
-              {profile?.avatar_url ? 'Change Headshot' : 'Upload Headshot'}
+            <label className="cursor-pointer bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Headshot
               <input type="file" name="headshot" accept="image/png" className="hidden" onChange={(e) => handleFileChange(e, 'avatar')} />
             </label>
-            <p className="text-[9px] text-zinc-500 mt-3 uppercase tracking-tighter font-bold">Transparent PNG (5:6 Ratio)</p>
           </div>
 
-          {/* Logo Card */}
-          <div className="relative group bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center transition-all hover:border-[#00AEEF]/50">
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center">
             <div className="h-24 flex items-center justify-center mb-4">
-              {logoPreview ? (
-                <img src={logoPreview} className="max-h-16 w-auto object-contain" />
-              ) : (
-                <Building2 className="w-12 h-12 text-zinc-700" />
-              )}
+              {logoPreview ? <img src={logoPreview} className="max-h-16 w-auto object-contain" /> : <Building2 className="w-12 h-12 text-zinc-700" />}
             </div>
-            <label className="cursor-pointer border border-white/20 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
-              {profile?.company_logo ? 'Change Logo' : 'Upload Logo'}
+            <label className="cursor-pointer border border-white/20 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Logo
               <input type="file" name="company_logo_file" accept="image/png" className="hidden" onChange={(e) => handleFileChange(e, 'logo')} />
             </label>
-            <p className="text-[9px] text-zinc-500 mt-3 uppercase tracking-tighter font-bold">White Logo Recommended</p>
           </div>
         </div>
       </section>
 
-      {/* 🆔 PROFILE IDENTITY */}
-      <section className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Identity & Credentials</h3>
+      {/* IDENTITY */}
+      <section className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Agent Profile</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Username / URL</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00AEEF] font-bold">/</span>
-              <input name="username" defaultValue={profile?.username} required className="w-full bg-black border border-white/10 rounded-2xl p-4 pl-8 outline-none focus:border-[#00AEEF] font-bold text-white" />
-            </div>
+            <label className="text-[10px] font-bold uppercase text-zinc-500">Username</label>
+            <input name="username" defaultValue={profile?.username} required className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Display Name</label>
-            <input name="agent_name" defaultValue={profile?.agent_name} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] font-bold text-white" />
+            <label className="text-[10px] font-bold uppercase text-zinc-500">Name</label>
+            <input name="agent_name" defaultValue={profile?.agent_name} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">License Number</label>
-            <input name="license_number" defaultValue={profile?.license_number} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] font-mono text-white" />
+            <label className="text-[10px] font-bold uppercase text-zinc-500">License</label>
+            <input name="license_number" defaultValue={profile?.license_number} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Theme Background</label>
-            <select name="video_bg_url" defaultValue={profile?.video_bg_url} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] appearance-none cursor-pointer">
+            <label className="text-[10px] font-bold uppercase text-zinc-500">Theme</label>
+            <select name="video_bg_url" defaultValue={profile?.video_bg_url} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] appearance-none">
               {VIDEO_THEMES.map(v => <option key={v.url} value={v.url}>{v.name}</option>)}
             </select>
           </div>
         </div>
       </section>
 
-      {/* ⚡ SMART CTA ACTION */}
-      <section className="bg-[#00AEEF]/5 border border-[#00AEEF]/20 rounded-3xl p-6 md:p-8 space-y-6">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Primary Action Button</h3>
+      {/* SMART CTA */}
+      <section className="bg-[#00AEEF]/5 border border-[#00AEEF]/20 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Action Button</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select 
-            value={ctaType}
-            onChange={(e) => setCtaType(e.target.value)}
-            name="cta_type_select"
-            className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none font-bold text-white appearance-none cursor-pointer"
-          >
+          <select value={ctaType} onChange={(e) => setCtaType(e.target.value)} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none">
             {CTA_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
-          <input 
-            name="cta_text" 
-            defaultValue={profile?.cta_text} 
-            placeholder="Button Text (e.g. Book Now)" 
-            className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" 
-          />
-          <input 
-            name="cta_url" 
-            defaultValue={profile?.cta_url?.replace(`${ctaType}:`, '')} 
-            placeholder={CTA_TYPES.find(t => t.value === ctaType)?.placeholder}
-            className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] text-[#00AEEF]" 
-          />
+          <input name="cta_text" defaultValue={profile?.cta_text} placeholder="Button Text" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none" />
+          <input name="cta_url" defaultValue={profile?.cta_url?.replace(`${ctaType}:`, '')} placeholder="Link/Number" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none text-[#00AEEF]" />
         </div>
       </section>
 
-      {/* 🌐 SOCIAL MEDIA */}
-      <section className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
-        <div className="flex justify-between items-end">
-           <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Social Channels</h3>
-           <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">Top 4 show on mobile</span>
-        </div>
+      {/* SOCIALS */}
+      <section className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Social Links</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {SOCIAL_NETWORKS.map(net => (
-            <div key={net} className="flex items-center gap-3 bg-black/40 p-2 pr-4 rounded-2xl border border-white/5">
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#00AEEF] font-bold text-[10px]">
-                {net[0]}
-              </div>
-              <input 
-                name={`social_${net.toLowerCase()}`} 
-                defaultValue={profile?.social_links?.[net.toLowerCase()]} 
-                placeholder={`${net} username/link`} 
-                className="flex-1 bg-transparent border-none outline-none text-sm placeholder:text-zinc-700" 
-              />
-            </div>
+            <input key={net} name={`social_${net.toLowerCase()}`} defaultValue={profile?.social_links?.[net.toLowerCase()]} placeholder={net} className="bg-black border border-white/10 rounded-2xl p-4 outline-none text-sm" />
           ))}
         </div>
       </section>
 
-      {/* PUBLISH BUTTON */}
-      <button 
-        disabled={loading} 
-        type="submit" 
-        className="group relative w-full bg-white text-black font-black py-8 rounded-[40px] shadow-2xl overflow-hidden hover:bg-[#00AEEF] hover:text-white transition-all active:scale-[0.98] disabled:bg-zinc-800 uppercase tracking-[0.4em] text-xs"
-      >
-        <div className="relative z-10 flex items-center justify-center gap-3">
-          {loading ? 'Transmitting Data...' : 'Save & Publish Live'}
-          <Upload size={16} className="group-hover:translate-y-[-2px] transition-transform" />
-        </div>
+      <button disabled={loading} type="submit" className="w-full bg-white text-black font-black py-8 rounded-[40px] hover:bg-[#00AEEF] hover:text-white transition-all uppercase tracking-[0.4em] text-xs">
+        {loading ? 'Processing...' : 'Save & Publish'}
       </button>
-
     </form>
   )
 }
