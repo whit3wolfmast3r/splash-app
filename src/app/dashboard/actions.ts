@@ -26,7 +26,7 @@ export async function updateProfile(formData: FormData) {
     const newAvatar = await uploadAsset(headshotFile, 'avatars')
     if (newAvatar) avatar_url = newAvatar
 
-    // FIXED: Now uses your 'logos' bucket from Supabase
+    // FIXED: Correctly points to 'logos' bucket
     const newLogo = await uploadAsset(logoFile, 'logos') 
     if (newLogo) company_logo = newLogo
 
@@ -37,13 +37,11 @@ export async function updateProfile(formData: FormData) {
       if (val) social_links[net] = val
     })
 
-    const username = (formData.get('username') as string || '').toLowerCase().trim()
-
     const { error: dbError } = await supabase
       .from('profiles')
       .update({
         agent_name: formData.get('agent_name'),
-        username: username,
+        username: (formData.get('username') as string || '').toLowerCase().trim(),
         license_number: formData.get('license_number'),
         cta_text: formData.get('cta_text'),
         cta_url: formData.get('cta_url'),
@@ -58,7 +56,7 @@ export async function updateProfile(formData: FormData) {
     if (dbError) throw dbError
 
     revalidatePath('/dashboard')
-    revalidatePath(`/${username}`)
+    revalidatePath(`/${formData.get('username')}`)
     return { success: true }
   } catch (err: any) {
     return { error: err.message }
