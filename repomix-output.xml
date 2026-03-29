@@ -1,0 +1,1125 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+public/equal-housing.png
+public/file.svg
+public/globe.svg
+public/lynxx-dashboard-bg.svg
+public/lynxx-footer.png
+public/lynxx-logo.png
+public/next.svg
+public/vercel.svg
+public/window.svg
+README.md
+src/app/[username]/page.tsx
+src/app/actions/analytics.ts
+src/app/auth/callback/route.ts
+src/app/auth/signout/route.ts
+src/app/dashboard/actions.ts
+src/app/dashboard/page.tsx
+src/app/favicon.ico
+src/app/globals.css
+src/app/layout.tsx
+src/app/login/actions.ts
+src/app/login/page.tsx
+src/app/page.tsx
+src/components/DashboardForm.tsx
+src/components/SplashPage.tsx
+src/middleware.ts
+src/utils/supabase/server.ts
+src/utils/supabase/supabase.ts
+tailwind.config.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="package.json">
+{
+  "name": "splash-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.3",
+    "lucide-react": "^0.577.0",
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/lynxx-dashboard-bg.svg">
+<svg xmlns='http://www.w3.org/2000/svg'  width='341' height='341' viewBox='0 0 800 800'><rect fill='#000000' width='800' height='800'/><g fill='none' stroke='#00719B'  stroke-width='1.5'><path d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/><path d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/><path d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/><path d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/><path d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/></g><g  fill='#00AEEF'><circle  cx='769' cy='229' r='6'/><circle  cx='539' cy='269' r='6'/><circle  cx='603' cy='493' r='6'/><circle  cx='731' cy='737' r='6'/><circle  cx='520' cy='660' r='6'/><circle  cx='309' cy='538' r='6'/><circle  cx='295' cy='764' r='6'/><circle  cx='40' cy='599' r='6'/><circle  cx='102' cy='382' r='6'/><circle  cx='127' cy='80' r='6'/><circle  cx='370' cy='105' r='6'/><circle  cx='578' cy='42' r='6'/><circle  cx='237' cy='261' r='6'/><circle  cx='390' cy='382' r='6'/></g></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="src/app/auth/callback/route.ts">
+import { createClient } from '@/utils/supabase/server'
+import { NextResponse } from 'next/server'
+
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  // if "next" is in param, use it as the redirect URL
+  const next = searchParams.get('next') ?? '/dashboard'
+
+  if (code) {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error) {
+      return NextResponse.redirect(`${origin}${next}`)
+    }
+  }
+
+  // return the user to an error page with instructions
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+}
+</file>
+
+<file path="src/app/auth/signout/route.ts">
+import { createClient } from '@/utils/supabase/server'
+import { revalidatePath } from 'next/cache'
+import { NextResponse } from 'next/server'
+
+export async function POST(request: Request) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    await supabase.auth.signOut()
+  }
+
+  revalidatePath('/', 'layout')
+  return NextResponse.redirect(new URL('/login', request.url), {
+    status: 302,
+  })
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/utils/supabase/supabase.ts">
+import { createClient } from '@supabase/supabase-js'
+
+// This prevents Vercel from crashing if the keys aren't loaded yet
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tmp.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'tmp'
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+</file>
+
+<file path="tailwind.config.ts">
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+export default config;
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/actions/analytics.ts">
+'use server'
+
+import { createClient } from '@/utils/supabase/server'
+
+export async function trackEvent(profileId: string, eventType: 'view' | 'click') {
+  try {
+    const supabase = await createClient()
+    await supabase.from('analytics').insert({
+      profile_id: profileId,
+      event_type: eventType
+    })
+  } catch (e) {
+    console.error('Analytics error:', e)
+  }
+}
+</file>
+
+<file path="src/utils/supabase/server.ts">
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+export async function createClient() {
+  const cookieStore = await cookies()
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // This can be ignored if called from a Server Component
+          }
+        },
+      },
+    }
+  )
+}
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  } as any, // 'as any' stops TypeScript from blocking the build if types are lagging
+};
+
+export default nextConfig;
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+</file>
+
+<file path="src/app/login/actions.ts">
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server'
+
+export async function login(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    console.error('Login error:', error.message)
+    redirect('/login?error=Invalid Credentials')
+  }
+
+  revalidatePath('/', 'layout')
+  redirect('/dashboard')
+}
+
+export async function signup(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      // UPDATED TO YOUR NEW DOMAIN
+      emailRedirectTo: `https://agentlynxx.com/auth/callback`,
+    },
+  })
+
+  if (error) {
+    console.error('Signup error:', error.message)
+    redirect('/login?error=Signup Failed')
+  }
+
+  revalidatePath('/', 'layout')
+  redirect('/dashboard')
+}
+</file>
+
+<file path="src/app/login/page.tsx">
+import { login, signup } from './actions'
+
+export default function LoginPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#050505] p-6 font-sans">
+      <div className="w-full max-w-sm space-y-10 bg-zinc-900/50 p-10 rounded-[3rem] border border-zinc-800 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        
+        <div className="flex flex-col items-center text-center relative z-10">
+          <img src="/lynxx-logo.png" className="w-16 h-16 mb-6 drop-shadow-[0_0_15px_rgba(0,174,239,0.3)]" alt="Lynxx" />
+          <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase">
+            agent <span className="text-[#00AEEF]">lynxx</span>
+          </h1>
+          <p className="text-zinc-500 text-[10px] mt-2 font-bold uppercase tracking-[0.3em]">Partner Portal</p>
+        </div>
+
+        <form className="space-y-4 relative z-10">
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-2">Email Access</label>
+            <input name="email" type="email" required className="w-full bg-black/50 border border-zinc-800 rounded-2xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-[#00AEEF]/50 transition placeholder:text-zinc-700" placeholder="agent@lynxx.com" />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Password</label>
+            <input name="password" type="password" required className="w-full bg-black/50 border border-zinc-800 rounded-2xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-[#00AEEF]/50 transition" />
+          </div>
+          
+          <div className="flex flex-col gap-3 pt-6">
+            <button formAction={login} className="w-full bg-white text-black font-black py-5 rounded-2xl hover:bg-[#00AEEF] hover:text-white transition-all uppercase tracking-widest text-sm shadow-xl active:scale-95">Log In</button>
+            <button formAction={signup} className="w-full text-zinc-500 font-bold py-3 rounded-2xl hover:text-white transition text-[10px] uppercase tracking-widest">Create Partner Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/middleware.ts">
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({ name, value, ...options })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({ name, value: '', ...options })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
+  // This line checks the user's status and refreshes the cookie
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Protect the dashboard: if no user, send to login
+  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // If user is logged in and tries to go to login page, send to dashboard
+  if (request.nextUrl.pathname === '/login' && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/login'],
+}
+</file>
+
+<file path="src/app/page.tsx">
+import Link from 'next/link';
+
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 text-center font-sans">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#00AEEF] opacity-5 blur-[120px]" />
+      </div>
+
+      <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white mb-4">
+        agent <span className="text-[#00AEEF] normal-case">Lynxx</span>
+      </h1>
+      <p className="text-zinc-400 text-lg md:text-xl max-w-md mb-12 font-medium">
+        The ultimate luxury digital business card for modern real estate professionals.
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+        <Link 
+          href="/login" 
+          className="flex-1 bg-white text-black font-black py-5 rounded-2xl hover:bg-[#00AEEF] hover:text-white transition-all uppercase tracking-widest shadow-2xl"
+        >
+          Get Started
+        </Link>
+      </div>
+    </main>
+  );
+}
+</file>
+
+<file path="src/app/[username]/page.tsx">
+import { createClient } from '../../utils/supabase/server';
+import SplashPage from '../../components/SplashPage';
+import { notFound } from 'next/navigation';
+import { trackEvent } from '@/app/actions/analytics';
+
+export const dynamic = 'force-dynamic';
+
+export default async function Page({ params }: { params: Promise<{ username: string }> }) {
+  const { username } = await params;
+  const supabase = await createClient(); 
+  
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('username', username)
+    .single();
+
+  if (error || !profile) return notFound();
+
+  // Track the view in the background
+  // We don't 'await' it to keep the page load fast
+  trackEvent(profile.id, 'view');
+
+  return <SplashPage profile={profile} />;
+}
+</file>
+
+<file path="src/app/dashboard/page.tsx">
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
+import DashboardForm from '@/components/DashboardForm'
+
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  // 1. Fetch Profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) redirect('/login')
+
+  // 2. Fetch Analytics Counts (The missing data causing the build error)
+  const [viewRes, clickRes] = await Promise.all([
+    supabase
+      .from('analytics')
+      .select('*', { count: 'exact', head: true })
+      .eq('profile_id', user.id)
+      .eq('event_type', 'view'),
+    supabase
+      .from('analytics')
+      .select('*', { count: 'exact', head: true })
+      .eq('profile_id', user.id)
+      .eq('event_type', 'click')
+  ])
+
+  const viewCount = viewRes.count || 0
+  const clickCount = clickRes.count || 0
+
+  return (
+    /* MAIN WRAPPER: Branded with True Black and your SVG pattern */
+    <div className="min-h-screen bg-[#050505] relative overflow-hidden font-sans">
+      
+      {/* SVG BACKGROUND LAYER */}
+      <div 
+        className="absolute inset-0 opacity-10 pointer-events-none" 
+        style={{ 
+          backgroundImage: `url('/lynxx-dashboard-bg.svg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      />
+
+      <div className="relative z-10 max-w-4xl mx-auto p-4 md:p-12">
+        
+        {/* BRANDED HEADER */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+          <div>
+            <h1 className="text-3xl font-light tracking-tighter text-white lowercase">
+              agent <span className="font-black uppercase tracking-[0.2em] text-[#00AEEF] italic">Lynxx</span>
+              <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 not-italic border border-zinc-800 px-2 py-1 rounded">Admin</span>
+            </h1>
+            <p className="text-[#00AEEF] text-[10px] font-bold uppercase tracking-[0.3em] mt-2">
+              Editing: <span className="text-white">@{profile.username}</span>
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <a 
+              href={`/${profile.username}`} 
+              target="_blank" 
+              className="flex-1 md:flex-none text-center px-6 py-3 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#00AEEF] hover:text-white transition-all shadow-xl"
+            >
+              View Live Page
+            </a>
+            <form action="/auth/signout" method="post" className="flex-1 md:flex-none">
+              <button className="w-full px-6 py-3 bg-zinc-900 text-zinc-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-zinc-800 hover:bg-red-950 hover:text-red-500 transition-all">
+                Sign Out
+              </button>
+            </form>
+          </div>
+        </header>
+
+        {/* THE FORM - Now passing viewCount and clickCount */}
+        <DashboardForm 
+          profile={profile} 
+          viewCount={viewCount} 
+          clickCount={clickCount} 
+        />
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="src/app/dashboard/actions.ts">
+'use server'
+
+import { createClient } from '@/utils/supabase/server'
+import { revalidatePath } from 'next/cache'
+
+export async function updateProfile(formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  let avatar_url = formData.get('current_avatar_url') as string
+  let company_logo = formData.get('current_company_logo') as string
+
+  const uploadAsset = async (file: File, bucket: string) => {
+    if (!file || file.size === 0 || file.name === 'undefined') return null
+    const name = `${user.id}/${Date.now()}-${file.name.replace(/\s/g, '_')}`
+    const { error } = await supabase.storage.from(bucket).upload(name, file, { upsert: true })
+    if (error) throw error
+    return supabase.storage.from(bucket).getPublicUrl(name).data.publicUrl
+  }
+
+  try {
+    const headshotFile = formData.get('headshot') as File
+    const logoFile = formData.get('company_logo_file') as File
+
+    const newAvatar = await uploadAsset(headshotFile, 'avatars')
+    if (newAvatar) avatar_url = newAvatar
+
+    // FIXED: Correctly points to 'logos' bucket
+    const newLogo = await uploadAsset(logoFile, 'logos') 
+    if (newLogo) company_logo = newLogo
+
+    const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow', 'wechat']
+    const social_links: any = {}
+    networks.forEach(net => {
+      const val = formData.get(`social_${net}`)
+      if (val) social_links[net] = val
+    })
+
+    const { error: dbError } = await supabase
+      .from('profiles')
+      .update({
+        agent_name: formData.get('agent_name'),
+        username: (formData.get('username') as string || '').toLowerCase().trim(),
+        license_number: formData.get('license_number'),
+        cta_text: formData.get('cta_text'),
+        cta_url: formData.get('cta_url'),
+        video_bg_url: formData.get('video_bg_url'),
+        avatar_url,
+        company_logo,
+        social_links,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id)
+
+    if (dbError) throw dbError
+
+    revalidatePath('/dashboard')
+    revalidatePath(`/${formData.get('username')}`)
+    return { success: true }
+  } catch (err: any) {
+    return { error: err.message }
+  }
+}
+</file>
+
+<file path="src/components/DashboardForm.tsx">
+'use client'
+
+import { useState } from 'react'
+import { updateProfile } from '@/app/dashboard/actions'
+import { Upload, Link, Phone, Mail, MessageSquare, Camera, Building2 } from 'lucide-react'
+
+const VIDEO_THEMES = [
+  { name: 'Modern Estate (Video 4)', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video4.mp4' },
+  { name: 'Luxury Glass (Video 6)', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video6.mp4' },
+  { name: 'Minimalist Interior (Video 7)', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video7.mp4' },
+  { name: 'Urban Night (Video 8)', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video8.mp4' },
+]
+
+const CTA_TYPES = [
+  { label: 'Website Link', value: 'link', icon: <Link size={14}/>, placeholder: 'https://calendly.com/user' },
+  { label: 'Phone Call', value: 'tel', icon: <Phone size={14}/>, placeholder: '702-555-0123' },
+  { label: 'Text Message', value: 'sms', icon: <MessageSquare size={14}/>, placeholder: '702-555-0123' },
+  { label: 'Email Me', value: 'mailto', icon: <Mail size={14}/>, placeholder: 'name@agency.com' },
+]
+
+const SOCIAL_NETWORKS = ['Instagram', 'Facebook', 'TikTok', 'YouTube', 'LinkedIn', 'WhatsApp', 'Zillow', 'WeChat']
+
+export default function DashboardForm({ profile, viewCount, clickCount }: { profile: any, viewCount: number, clickCount: number }) {
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  
+  const initialType = profile?.cta_url?.startsWith('tel:') ? 'tel' : 
+                     profile?.cta_url?.startsWith('sms:') ? 'sms' : 
+                     profile?.cta_url?.startsWith('mailto:') ? 'mailto' : 'link';
+  
+  const [ctaType, setCtaType] = useState(initialType)
+  const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url)
+  const [logoPreview, setLogoPreview] = useState(profile?.company_logo)
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'logo') => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const url = URL.createObjectURL(file)
+      if (type === 'avatar') setAvatarPreview(url)
+      else setLogoPreview(url)
+    }
+  }
+
+  async function handleSubmit(formData: FormData) {
+    setLoading(true)
+    setMessage('')
+    
+    const rawCtaUrl = formData.get('cta_url') as string
+    if (ctaType !== 'link' && rawCtaUrl && !rawCtaUrl.startsWith(ctaType)) {
+       formData.set('cta_url', `${ctaType}:${rawCtaUrl.replace(`${ctaType}:`, '')}`)
+    }
+
+    const result = await updateProfile(formData)
+    if (result?.error) setMessage('❌ ' + result.error)
+    else setMessage('✅ Profile Live & Updated!')
+    
+    setLoading(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  return (
+    <form action={handleSubmit} encType="multipart/form-data" className="space-y-12 pb-20 text-white font-sans">
+      
+      <input type="hidden" name="current_avatar_url" value={profile?.avatar_url || ''} />
+      <input type="hidden" name="current_company_logo" value={profile?.company_logo || ''} />
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Views</p>
+          <p className="text-4xl font-light tracking-tighter">{viewCount || 0}</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00AEEF] mb-1">Clicks</p>
+          <p className="text-4xl font-light tracking-tighter text-[#00AEEF]">{clickCount || 0}</p>
+        </div>
+      </div>
+
+      {message && (
+        <div className="p-4 rounded-2xl text-center text-xs font-black uppercase tracking-widest bg-[#00AEEF] text-black">
+          {message}
+        </div>
+      )}
+
+      {/* ASSET UPLOADS */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Branding Assets</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center">
+            <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 border border-white/20 bg-black">
+              {avatarPreview ? <img src={avatarPreview} className="w-full h-full object-cover" /> : <Camera className="w-full h-full p-6 text-zinc-700" />}
+            </div>
+            <label className="cursor-pointer bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Headshot
+              <input type="file" name="headshot" accept="image/png" className="hidden" onChange={(e) => handleFileChange(e, 'avatar')} />
+            </label>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center">
+            <div className="h-24 flex items-center justify-center mb-4">
+              {logoPreview ? <img src={logoPreview} className="max-h-16 w-auto object-contain" /> : <Building2 className="w-12 h-12 text-zinc-700" />}
+            </div>
+            <label className="cursor-pointer border border-white/20 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Logo
+              <input type="file" name="company_logo_file" accept="image/png" className="hidden" onChange={(e) => handleFileChange(e, 'logo')} />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      {/* IDENTITY */}
+      <section className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Agent Profile</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500">Username</label>
+            <input name="username" defaultValue={profile?.username} required className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500">Name</label>
+            <input name="agent_name" defaultValue={profile?.agent_name} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500">License</label>
+            <input name="license_number" defaultValue={profile?.license_number} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF]" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase text-zinc-500">Theme</label>
+            <select name="video_bg_url" defaultValue={profile?.video_bg_url} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none focus:border-[#00AEEF] appearance-none">
+              {VIDEO_THEMES.map(v => <option key={v.url} value={v.url}>{v.name}</option>)}
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {/* SMART CTA */}
+      <section className="bg-[#00AEEF]/5 border border-[#00AEEF]/20 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Action Button</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <select value={ctaType} onChange={(e) => setCtaType(e.target.value)} className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none">
+            {CTA_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </select>
+          <input name="cta_text" defaultValue={profile?.cta_text} placeholder="Button Text" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none" />
+          <input name="cta_url" defaultValue={profile?.cta_url?.replace(`${ctaType}:`, '')} placeholder="Link/Number" className="w-full bg-black border border-white/10 rounded-2xl p-4 outline-none text-[#00AEEF]" />
+        </div>
+      </section>
+
+      {/* SOCIALS */}
+      <section className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-6">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Social Links</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {SOCIAL_NETWORKS.map(net => (
+            <input key={net} name={`social_${net.toLowerCase()}`} defaultValue={profile?.social_links?.[net.toLowerCase()]} placeholder={net} className="bg-black border border-white/10 rounded-2xl p-4 outline-none text-sm" />
+          ))}
+        </div>
+      </section>
+
+      <button disabled={loading} type="submit" className="w-full bg-white text-black font-black py-8 rounded-[40px] hover:bg-[#00AEEF] hover:text-white transition-all uppercase tracking-[0.4em] text-xs">
+        {loading ? 'Processing...' : 'Save & Publish'}
+      </button>
+    </form>
+  )
+}
+</file>
+
+<file path="src/components/SplashPage.tsx">
+'use client'
+
+import React, { useState } from 'react';
+import { 
+  Instagram, Facebook, Youtube, Video, ExternalLink, 
+  Linkedin, MessageCircle, Phone, Globe 
+} from 'lucide-react';
+import { trackEvent } from '@/app/actions/analytics';
+
+const SOCIAL_MAP: Record<string, any> = {
+  instagram: { icon: Instagram },
+  facebook: { icon: Facebook },
+  tiktok: { icon: Video },
+  youtube: { icon: Youtube },
+  linkedin: { icon: Linkedin },
+  whatsapp: { icon: MessageCircle },
+  zillow: { icon: Globe },
+  wechat: { icon: Globe },
+};
+
+export default function SplashPage({ profile }: { profile: any }) {
+  const [ratio, setRatio] = useState(1);
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    setRatio(naturalHeight / naturalWidth);
+  };
+  
+  const getCtaHref = (url: string, text: string) => {
+    if (!url) return '#';
+    if (url.startsWith('tel:') || url.startsWith('sms:') || url.startsWith('mailto:')) return url;
+    return url.startsWith('http') ? url : `https://${url}`;
+  };
+
+  const isTall = ratio > 1.2;
+
+  return (
+    <div className="min-h-screen w-full bg-[#050505] flex justify-center items-center p-0 md:p-4 font-sans overflow-hidden">
+      <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-2xl md:rounded-[3.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden">
+        
+        {/* VIDEO BACKGROUND */}
+        <div className="absolute inset-0 z-0">
+          {profile.video_bg_url && (
+            <video autoPlay muted loop playsInline key={profile.video_bg_url} className="h-full w-full object-cover opacity-40">
+              <source src={profile.video_bg_url} type="video/mp4" />
+            </video>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black" />
+        </div>
+
+        {/* HEADER */}
+        <div className="relative z-30 w-full px-8 pt-6 flex flex-col items-center text-center">
+            {profile.company_logo && (
+              <img src={profile.company_logo} className="h-20 w-auto object-contain mb-2 filter drop-shadow-2xl" alt="Brokerage" />
+            )}
+            
+            <h1 className="text-4xl font-extralight tracking-tight text-white drop-shadow-lg mb-4">
+              {profile.agent_name}
+            </h1>
+            
+            <div className="flex justify-center gap-6">
+               {profile.social_links && Object.entries(profile.social_links).slice(0, 4).map(([platform, url]) => {
+                 const Config = SOCIAL_MAP[platform];
+                 if (!Config || !url) return null;
+                 return (
+                   <a key={platform} href={url as string} target="_blank" className="transition-all duration-300 text-white hover:text-[#00AEEF] hover:scale-110">
+                     <Config.icon className="w-7 h-7" />
+                   </a>
+                 );
+               })}
+            </div>
+        </div>
+
+        {/* THE AGENT */}
+        <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center">
+          {profile.avatar_url && (
+            <img 
+              src={profile.avatar_url} 
+              onLoad={handleImageLoad}
+              className={`
+                max-w-none transition-all duration-1000 origin-bottom w-full
+                ${isTall ? "scale-[1.5] mb-[-10px]" : "mb-[145px] scale-[1.1]"}
+              `}
+              style={{ 
+                maskImage: 'linear-gradient(to top, transparent 0%, black 15%)', 
+                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%)' 
+              }}
+              alt="" 
+            />
+          )}
+        </div>
+
+        {/* DOCK & FOOTER */}
+        <div className="relative z-30 mt-auto w-full px-8 pb-4 pt-16 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col items-center">
+            
+            <a 
+              href={getCtaHref(profile.cta_url, profile.cta_text)} 
+              onClick={() => trackEvent(profile.id, 'click')}
+              className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-xl font-bold hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-widest mb-8"
+            >
+              {profile.cta_text}
+              <ExternalLink className="w-5 h-5 opacity-60" />
+            </a>
+
+            {/* LEGAL HUD (Using your local PNGs) */}
+            <div className="w-full grid grid-cols-3 items-center pb-4 px-2">
+               <div className="flex justify-start">
+                 <img src="/equal-housing.png" className="h-10 w-auto brightness-200" alt="HUD" />
+               </div>
+
+               <div className="text-center px-1">
+                 <span className="text-[11px] font-black uppercase tracking-widest text-white/40 whitespace-nowrap drop-shadow-md">
+                   NV: {profile.license_number}
+                 </span>
+               </div>
+
+               <div className="flex justify-end">
+                 <div className="flex flex-col items-center">
+                   <img src="/lynxx-footer.png" className="h-10 w-auto mb-1" alt="agent Lynxx" />
+                   <div className="flex items-center gap-0.5 text-[9px] lowercase font-light text-white/50">
+                      agent<span className="uppercase font-bold text-[#00AEEF]">Lynxx</span>
+                   </div>
+                 </div>
+               </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+</files>

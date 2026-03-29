@@ -26,7 +26,6 @@ export async function updateProfile(formData: FormData) {
     const newAvatar = await uploadAsset(headshotFile, 'avatars')
     if (newAvatar) avatar_url = newAvatar
 
-    // FIXED: Correctly points to 'logos' bucket
     const newLogo = await uploadAsset(logoFile, 'logos') 
     if (newLogo) company_logo = newLogo
 
@@ -46,6 +45,9 @@ export async function updateProfile(formData: FormData) {
         cta_text: formData.get('cta_text'),
         cta_url: formData.get('cta_url'),
         video_bg_url: formData.get('video_bg_url'),
+        // NEW ANALYTICS FIELDS
+        google_analytics_id: formData.get('google_analytics_id'),
+        clarity_id: formData.get('clarity_id'),
         avatar_url,
         company_logo,
         social_links,
