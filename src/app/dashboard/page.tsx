@@ -8,7 +8,6 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  // 1. Fetch Profile
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
@@ -17,7 +16,6 @@ export default async function DashboardPage() {
 
   if (!profile) redirect('/login')
 
-  // 2. Fetch Analytics Counts (The missing data causing the build error)
   const [viewRes, clickRes] = await Promise.all([
     supabase
       .from('analytics')
@@ -35,15 +33,15 @@ export default async function DashboardPage() {
   const clickCount = clickRes.count || 0
 
   return (
-    /* MAIN WRAPPER: Branded with True Black and your SVG pattern */
     <div className="min-h-screen bg-[#050505] relative overflow-hidden font-sans">
       
-      {/* SVG BACKGROUND LAYER */}
+      {/* UPDATED: Repeating Constellation Pattern */}
       <div 
-        className="absolute inset-0 opacity-10 pointer-events-none" 
+        className="absolute inset-0 opacity-20 pointer-events-none" 
         style={{ 
           backgroundImage: `url('/lynxx-dashboard-bg.svg')`,
-          backgroundSize: 'cover',
+          backgroundSize: '400px', // Smaller scale = more dots
+          backgroundRepeat: 'repeat',
           backgroundPosition: 'center'
         }}
       />
@@ -78,7 +76,7 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        {/* THE FORM - Now passing viewCount and clickCount */}
+        {/* THE FORM */}
         <DashboardForm 
           profile={profile} 
           viewCount={viewCount} 
