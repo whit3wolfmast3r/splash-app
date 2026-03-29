@@ -1,0 +1,11 @@
+<svg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'>
+  <g fill='none' stroke='rgb(0, 113, 155)' stroke-width='1' opacity='0.5'>
+    <path d='M0 0L150 50L300 20L400 60L400 0M150 50L200 150L80 140L0 0M300 20L200 150L350 180L400 60M80 140L40 280L0 200L0 400M200 150L180 250L40 280M200 150L320 300L350 180M180 250L140 350L40 280M320 300L250 380L140 350M320 300L400 400M250 380L400 400M140 350L0 400M350 180L400 250L400 400'/>
+  </g>
+  <g fill='rgb(0, 174, 239)'>
+    <circle cx='0' cy='0' r='3'/><circle cx='150' cy='50' r='3'/><circle cx='300' cy='20' r='3'/><circle cx='400' cy='60' r='3'/>
+    <circle cx='80' cy='140' r='3'/><circle cx='200' cy='150' r='3'/><circle cx='350' cy='180' r='3'/>
+    <circle cx='40' cy='280' r='3'/><circle cx='180' cy='250' r='3'/><circle cx='320' cy='300' r='3'/>
+    <circle cx='0' cy='400' r='3'/><circle cx='140' cy='350' r='3'/><circle cx='250' cy='380' r='3'/><circle cx='400' cy='400' r='3'/>
+  </g>
+</svg>

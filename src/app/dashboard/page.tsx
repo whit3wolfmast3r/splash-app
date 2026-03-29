@@ -35,12 +35,15 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#050505] relative overflow-hidden font-sans">
       
-      {/* UPDATED: Repeating Constellation Pattern */}
+      {/* 
+          DASHBOARD BACKGROUND LAYER 
+          Bumped opacity to 50 and set backgroundSize to 350px for higher density
+      */}
       <div 
-        className="absolute inset-0 opacity-20 pointer-events-none" 
+        className="absolute inset-0 opacity-50 pointer-events-none transition-opacity duration-1000" 
         style={{ 
           backgroundImage: `url('/lynxx-dashboard-bg.svg')`,
-          backgroundSize: '400px', // Smaller scale = more dots
+          backgroundSize: '350px', 
           backgroundRepeat: 'repeat',
           backgroundPosition: 'center'
         }}
@@ -50,7 +53,7 @@ export default async function DashboardPage() {
         
         {/* BRANDED HEADER */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-          <div>
+          <div className="drop-shadow-2xl">
             <h1 className="text-3xl font-light tracking-tighter text-white lowercase">
               agent <span className="font-black uppercase tracking-[0.2em] text-[#00AEEF] italic">Lynxx</span>
               <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 not-italic border border-zinc-800 px-2 py-1 rounded">Admin</span>
