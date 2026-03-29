@@ -12,7 +12,7 @@ export async function updateProfile(formData: FormData) {
   let company_logo = formData.get('current_company_logo') as string
 
   const uploadAsset = async (file: File, bucket: string) => {
-    if (!file || file.size === 0 || file.name === 'undefined') return null
+    if (!file || file.size === 0) return null
     const name = `${user.id}/${Date.now()}-${file.name.replace(/\s/g, '_')}`
     const { error } = await supabase.storage.from(bucket).upload(name, file, { upsert: true })
     if (error) throw error
@@ -20,22 +20,18 @@ export async function updateProfile(formData: FormData) {
   }
 
   try {
-    const headshotFile = formData.get('headshot') as File
-    const logoFile = formData.get('company_logo_file') as File
-
-    const newAvatar = await uploadAsset(headshotFile, 'avatars')
+    const newAvatar = await uploadAsset(formData.get('headshot') as File, 'avatars')
     if (newAvatar) avatar_url = newAvatar
 
-    // FIXED: Correctly points to 'logos' bucket
-    const newLogo = await uploadAsset(logoFile, 'logos') 
+    const newLogo = await uploadAsset(formData.get('company_logo_file') as File, 'logos')
     if (newLogo) company_logo = newLogo
 
-    const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow', 'wechat']
-    const social_links: any = {}
-    networks.forEach(net => {
-      const val = formData.get(`social_${net}`)
-      if (val) social_links[net] = val
-    })
+    // SMART CTA LOGIC: Combine type + input secretly
+    const ctaType = formData.get('cta_type_select') as string
+    let ctaUrl = formData.get('cta_url') as string
+    if (ctaType !== 'link' && ctaUrl && !ctaUrl.startsWith(ctaType)) {
+      ctaUrl = `${ctaType}:${ctaUrl.replace(/[:\s-()]/g, '')}`
+    }
 
     const { error: dbError } = await supabase
       .from('profiles')
@@ -44,11 +40,17 @@ export async function updateProfile(formData: FormData) {
         username: (formData.get('username') as string || '').toLowerCase().trim(),
         license_number: formData.get('license_number'),
         cta_text: formData.get('cta_text'),
-        cta_url: formData.get('cta_url'),
+        cta_url: ctaUrl,
         video_bg_url: formData.get('video_bg_url'),
         avatar_url,
         company_logo,
-        social_links,
+        social_links: {
+          instagram: formData.get('social_instagram'),
+          facebook: formData.get('social_facebook'),
+          tiktok: formData.get('social_tiktok'),
+          youtube: formData.get('social_youtube'),
+          zillow: formData.get('social_zillow'),
+        },
         updated_at: new Date().toISOString()
       })
       .eq('id', user.id)
