@@ -89,7 +89,7 @@ export default function SplashPage({ profile }: { profile: any }) {
                  const Config = SOCIAL_MAP[platform];
                  if (!Config || !url) return null;
                  return (
-                   <a key={platform} href={url as string} target="_blank" className="transition-all duration-300 text-white/70 hover:text-[#00AEEF] hover:scale-110">
+                   <a key={platform} href={url as string} target="_blank" className="transition-all duration-300 text-white hover:text-[#00AEEF] hover:scale-110">
                      <Config.icon className="w-6 h-6" />
                    </a>
                  );
@@ -97,7 +97,7 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </div>
 
-        {/* AGENT PHOTO: Moved up to anchor near the button top */}
+        {/* AGENT PHOTO */}
         <div className="absolute inset-x-0 bottom-36 z-10 pointer-events-none flex justify-center items-end">
           {profile.avatar_url && (
             <img 
@@ -115,7 +115,7 @@ export default function SplashPage({ profile }: { profile: any }) {
         {/* DOCK & FOOTER */}
         <div className="relative z-30 mt-auto w-full px-8 pb-6 pt-24 bg-gradient-to-t from-black via-black/90 to-transparent flex flex-col items-center">
             
-            {/* CTA BUTTON: Shrunk width and added high-transparency glass look */}
+            {/* CTA BUTTON */}
             <a 
               href={getCtaHref(profile.cta_url)} 
               onClick={() => trackEvent(profile.id, 'click')}
@@ -125,20 +125,23 @@ export default function SplashPage({ profile }: { profile: any }) {
               <ExternalLink className="w-4 h-4 opacity-40" />
             </a>
 
-            {/* LEGAL HUD */}
+            {/* LEGAL HUD: Visibility Boosted */}
             <div className="w-full grid grid-cols-3 items-center px-2">
                <div className="flex justify-start">
-                 <img src="/equal-housing.png" className="h-7 w-auto brightness-200 opacity-30" alt="HUD" />
+                 {/* Increased visibility */}
+                 <img src="/equal-housing.png" className="h-7 w-auto brightness-200 opacity-80" alt="HUD" />
                </div>
 
                <div className="text-center">
-                 <span className="text-[9px] font-bold uppercase tracking-widest text-white/20 whitespace-nowrap">
+                 {/* Set to pure white and increased opacity */}
+                 <span className="text-[10px] font-bold uppercase tracking-widest text-white whitespace-nowrap drop-shadow-md">
                    {profile.license_number}
                  </span>
                </div>
 
                <div className="flex justify-end">
-                 <div className="flex flex-col items-center opacity-30">
+                 {/* Increased visibility */}
+                 <div className="flex flex-col items-center opacity-80">
                    <img src="/lynxx-footer.png" className="h-7 w-auto mb-0.5" alt="agent Lynxx" />
                    <div className="flex items-center gap-0.5 text-[7px] lowercase font-light text-white">
                       agent<span className="uppercase font-bold text-[#00AEEF]">Lynxx</span>
