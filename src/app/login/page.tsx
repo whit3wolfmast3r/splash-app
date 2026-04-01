@@ -19,7 +19,7 @@ export default async function LoginPage({
         {/* BRANDING: Matching Dashboard Style */}
         <div className="flex flex-col items-center text-center">
           <img 
-            src="/lynxx-logo.png" 
+            src="/lynxx-footer.png" 
             className="w-14 h-14 mb-4 drop-shadow-[0_0_15px_rgba(0,174,239,0.4)]" 
             alt="Lynxx" 
           />
