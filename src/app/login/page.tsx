@@ -8,10 +8,6 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string; message?: string }>
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // If already logged in, don't show the login page
-  if (user) redirect('/dashboard')
 
   const params = await searchParams;
 
