@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { Users, MousePointer2, Eye, BarChart, AlertCircle, ExternalLink, Mail } from 'lucide-react'
+import { Users, MousePointer2, Eye, AlertCircle, ExternalLink, Mail } from 'lucide-react'
 
 export default async function AdminStatsPage() {
   const supabase = await createClient()
@@ -16,12 +16,12 @@ export default async function AdminStatsPage() {
     .eq('id', user.id)
     .single()
 
-  // 3. The "Bouncer": If they aren't a database-verified admin, kick them to their own dashboard
+  // 3. The "Bouncer": If they aren't a database-verified admin, kick them out
   if (!profile?.is_admin) {
     redirect('/dashboard')
   }
 
-// Fetch Global Stats with error logging
+  // 4. Fetch Global Stats
   const { data: profiles, error: profileError } = await supabase
     .from('profiles')
     .select('*')
@@ -40,17 +40,17 @@ export default async function AdminStatsPage() {
     .from('analytics')
     .select('*', { count: 'exact', head: true })
     .eq('event_type', 'click')
-  const { count: totalViews } = await supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('event_type', 'view')
-  const { count: totalClicks } = await supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('event_type', 'click')
 
   const profilesMissingAnalytics = profiles?.filter(p => !p.google_analytics_id || !p.clarity_id) || []
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans p-6 md:p-12 relative overflow-hidden">
+      {/* Tech Grid Background */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url('/lynxx-dashboard-bg.svg')`, backgroundSize: '400px' }} />
 
       <div className="relative z-10 max-w-6xl mx-auto space-y-10">
         
+        {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-white/5 pb-8">
           <div>
             <h1 className="text-4xl font-black italic uppercase tracking-tighter">
@@ -63,6 +63,7 @@ export default async function AdminStatsPage() {
           </div>
         </div>
 
+        {/* METRIC CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
             <Users className="text-[#00AEEF] mb-4" size={24} />
@@ -81,21 +82,27 @@ export default async function AdminStatsPage() {
           </div>
         </div>
 
+        {/* OUTBOUND OPPORTUNITIES */}
         <section className="bg-[#00AEEF]/5 border border-[#00AEEF]/20 rounded-[2.5rem] p-8">
             <div className="flex items-center gap-3 mb-6">
                 <AlertCircle className="text-[#00AEEF]" size={20} />
                 <h2 className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00AEEF]">Outbound Opportunities</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-                {profilesMissingAnalytics.map(p => (
-                    <div key={p.id} className="bg-black/40 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-bold text-zinc-300">
-                        <Mail size={12} className="opacity-40" />
-                        {p.username}
-                    </div>
-                ))}
+                {profilesMissingAnalytics.length > 0 ? (
+                    profilesMissingAnalytics.map(p => (
+                        <div key={p.id} className="bg-black/40 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-bold text-zinc-300">
+                            <Mail size={12} className="opacity-40" />
+                            {p.username}
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">All users have analytics set up.</p>
+                )}
             </div>
         </section>
 
+        {/* AGENT TABLE */}
         <div className="bg-zinc-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -119,7 +126,7 @@ export default async function AdminStatsPage() {
                     </div>
                   </td>
                   <td className="p-6 text-right">
-                    <a href={`/${p.username}`} target="_blank" className="text-[10px] font-black uppercase tracking-widest text-[#00AEEF]">Visit</a>
+                    <a href={`/${p.username}`} target="_blank" className="text-[10px] font-black uppercase tracking-widest text-[#00AEEF] hover:text-white transition">Visit</a>
                   </td>
                 </tr>
               ))}
