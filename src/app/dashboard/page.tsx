@@ -3,19 +3,30 @@ import DashboardForm from '@/components/DashboardForm'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
+  
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null; // Middleware handles redirect
 
-  // IMPORTANT: No redirect here. Middleware handles it.
-  if (!user) return null;
-
-  const { data: profile } = await supabase
+  // Fetch Profile with error catching
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  if (!profile) return <div>Profile not found. Please contact support.</div>
+  // DEBUG: If there is a database error, show it
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-black text-white p-20 font-mono">
+        <h1 className="text-red-500 font-bold mb-4">DATABASE ERROR: {profileError.code}</h1>
+        <p className="text-zinc-400">Message: {profileError.message}</p>
+        <p className="mt-4">Your User ID: <span className="text-[#00AEEF]">{user.id}</span></p>
+        <p className="mt-2 italic text-xs">Ensure this ID exists in your 'profiles' table in Supabase.</p>
+      </div>
+    )
+  }
 
+  // Fetch Analytics
   const [viewRes, clickRes] = await Promise.all([
     supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'view'),
     supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('profile_id', user.id).eq('event_type', 'click')
@@ -35,7 +46,9 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
             <a href={`/${profile.username}`} target="_blank" className="flex-1 md:flex-none text-center px-6 py-3 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#00AEEF] hover:text-white transition-all shadow-xl">View Live Page</a>
-            <form action="/auth/signout" method="post" className="flex-1 md:flex-none"><button className="w-full px-6 py-3 bg-zinc-900 text-zinc-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-zinc-800 hover:bg-red-950 hover:text-red-500 transition-all">Sign Out</button></form>
+            <form action="/auth/signout" method="post" className="flex-1 md:flex-none">
+                <button className="w-full px-6 py-3 bg-zinc-900 text-zinc-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-zinc-800 hover:bg-red-950 hover:text-red-500 transition-all">Sign Out</button>
+            </form>
           </div>
         </header>
         <DashboardForm profile={profile} viewCount={viewRes.count || 0} clickCount={clickRes.count || 0} />
