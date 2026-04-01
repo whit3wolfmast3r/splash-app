@@ -1,10 +1,13 @@
 import { login, signup } from './actions'
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; message?: string }>
 }) {
+  // Await the params once at the top
+  const params = await searchParams;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#050505] p-6 font-sans relative overflow-hidden">
       
@@ -28,14 +31,14 @@ export default function LoginPage({
 
         {/* FEEDBACK MESSAGES */}
         <div className="space-y-3">
-            {(await searchParams).error && (
+            {params.error && (
                 <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-widest text-center">
-                    {(await searchParams).error}
+                    {params.error}
                 </div>
             )}
-            {(await searchParams).message && (
+            {params.message && (
                 <div className="p-3 rounded-xl bg-[#00AEEF]/10 border border-[#00AEEF]/20 text-[#00AEEF] text-[10px] font-bold uppercase tracking-widest text-center">
-                    {(await searchParams).message}
+                    {params.message}
                 </div>
             )}
         </div>
