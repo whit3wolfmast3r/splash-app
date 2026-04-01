@@ -1,11 +1,18 @@
 import { login, signup } from './actions'
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; message?: string }>
 }) {
-  // Await the params once at the top
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // If already logged in, don't show the login page
+  if (user) redirect('/dashboard')
+
   const params = await searchParams;
 
   return (
@@ -16,10 +23,10 @@ export default async function LoginPage({
 
       <div className="w-full max-w-sm space-y-8 bg-zinc-900/40 p-10 rounded-[2.5rem] border border-white/5 backdrop-blur-2xl shadow-2xl relative z-10">
         
-        {/* BRANDING: Matching Dashboard Style */}
+        {/* BRANDING */}
         <div className="flex flex-col items-center text-center">
           <img 
-            src="/lynxx-footer.png" 
+            src="/lynxx-logo.png" 
             className="w-14 h-14 mb-4 drop-shadow-[0_0_15px_rgba(0,174,239,0.4)]" 
             alt="Lynxx" 
           />

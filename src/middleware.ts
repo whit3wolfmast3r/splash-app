@@ -38,22 +38,15 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // This line checks the user's status and refreshes the cookie
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // Protect the dashboard: if no user, send to login
-  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  // If user is logged in and tries to go to login page, send to dashboard
-  if (request.nextUrl.pathname === '/login' && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
+  // This refreshes the session token in the background
+  await supabase.auth.getUser()
 
   return response
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  // We run this on everything except static assets
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }
