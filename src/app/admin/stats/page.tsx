@@ -21,9 +21,25 @@ export default async function AdminStatsPage() {
     redirect('/dashboard')
   }
 
-  // --- EVERYTHING BELOW IS SECURE ---
-  
-  const { data: profiles } = await supabase.from('profiles').select('*').order('created_at', { ascending: false })
+// Fetch Global Stats with error logging
+  const { data: profiles, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (profileError) {
+    console.error("Admin Fetch Error:", profileError.message)
+  }
+
+  const { count: totalViews } = await supabase
+    .from('analytics')
+    .select('*', { count: 'exact', head: true })
+    .eq('event_type', 'view')
+
+  const { count: totalClicks } = await supabase
+    .from('analytics')
+    .select('*', { count: 'exact', head: true })
+    .eq('event_type', 'click')
   const { count: totalViews } = await supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('event_type', 'view')
   const { count: totalClicks } = await supabase.from('analytics').select('*', { count: 'exact', head: true }).eq('event_type', 'click')
 
