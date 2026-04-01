@@ -12,8 +12,7 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    console.error('Login error:', error.message)
-    redirect('/login?error=Invalid Credentials')
+    redirect(`/login?error=${encodeURIComponent(error.message)}`)
   }
 
   revalidatePath('/', 'layout')
@@ -29,16 +28,14 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
-      // UPDATED TO YOUR NEW DOMAIN
       emailRedirectTo: `https://agentlynxx.com/auth/callback`,
     },
   })
 
   if (error) {
-    console.error('Signup error:', error.message)
-    redirect('/login?error=Signup Failed')
+    redirect(`/login?error=${encodeURIComponent(error.message)}`)
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  // Redirect to login with a success message so the user knows it worked
+  redirect('/login?message=Success! Please check your email to confirm your account.')
 }
