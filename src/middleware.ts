@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
           request.cookies.set({ name, value: '', ...options })
           response = NextResponse.next({
             request: {
-              headers: request.headers,
+                headers: request.headers,
             },
           })
           response.cookies.set({ name, value: '', ...options })
@@ -38,14 +38,30 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh the session in the background
-  await supabase.auth.getUser()
+  // 1. Refresh the session
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // 2. Define our protected zones
+  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+  const isAdmin = request.nextUrl.pathname.startsWith('/admin')
+  const isLogin = request.nextUrl.pathname.startsWith('/login')
+
+  // 3. Logic: If no user, but trying to reach private pages -> Login
+  if (!user && (isDashboard || isAdmin)) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // 4. Logic: If user is already logged in, but trying to go to login -> Dashboard
+  if (user && isLogin) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   return response
 }
 
 export const config = {
   matcher: [
+    // Runs on everything except static files/images/favicon
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
