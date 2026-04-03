@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
 import Script from 'next/script';
 import { trackEvent } from '@/app/actions/analytics';
 
@@ -66,7 +65,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
         </div>
 
-        {/* 1. HEADER: MOVED UP (2em / pt-8) */}
+        {/* 1. HEADER (GREEN ZONE) */}
         <header className="relative z-30 w-full px-8 pt-8 flex flex-col items-center text-center shrink-0">
             {profile.company_logo && (
               <img 
@@ -114,14 +113,13 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </header>
 
-        {/* 2. AVATAR: MOVED UP (top-[30%] vs top-[38%]) */}
+        {/* 2. AVATAR */}
         <main className="absolute inset-x-0 top-[30%] bottom-0 z-10 pointer-events-none flex justify-center overflow-hidden">
             {profile.avatar_url && (
               <img 
                 src={profile.avatar_url} 
                 className="w-full h-auto aspect-[5/6] object-cover object-top origin-top transition-transform duration-1000 group-hover:scale-[1.05]"
                 style={{ 
-                  /* ENHANCED BOTTOM GRADIENT OVERLAY */
                   maskImage: 'linear-gradient(to top, transparent 0%, black 35%, black 100%)', 
                   WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 35%, black 100%)' 
                 }}
@@ -130,35 +128,34 @@ export default function SplashPage({ profile }: { profile: any }) {
             )}
         </main>
 
-        {/* 3. FOOTER & ACTION: BUTTON SMALLER & LOWER */}
-        <footer className="relative z-30 mt-auto w-full px-8 pb-10 flex flex-col items-center">
+        {/* 3. FOOTER & ACTION (RED & YELLOW FIXES) */}
+        <footer className="relative z-30 mt-auto w-full px-8 pb-6 flex flex-col items-center">
             
-            {/* CTA BUTTON: 15% SMALLER WIDTH (w-[76%] vs w-[90%]) & LOWER POSITION */}
+            {/* CTA BUTTON: Centered, No Icon, Force Single Line (RED BOX FIX) */}
             <a 
               href={getCtaHref(profile.cta_url)} 
               onClick={() => trackEvent(profile.id, 'click')}
-              className="group flex items-center justify-center gap-3 w-[76%] py-4 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[15px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-500 uppercase tracking-[0.3em] mb-8 shadow-[0_25px_60px_rgba(0,0,0,0.6)] active:scale-95"
+              className="group inline-flex items-center justify-center w-auto min-w-[80%] px-10 py-4.5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[16px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-500 uppercase tracking-[0.3em] mb-10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] active:scale-95 whitespace-nowrap"
             >
-              <span className="drop-shadow-lg">{profile.cta_text || 'Contact Me'}</span>
-              <ExternalLink className="w-4 h-4 opacity-25 group-hover:opacity-100 transition-opacity" />
+              <span className="drop-shadow-lg text-center">{profile.cta_text || 'Contact Me'}</span>
             </a>
 
-            {/* LEGAL HUD */}
-            <div className="w-full grid grid-cols-3 items-center px-2 pt-6 border-t border-white/[0.05]">
+            {/* LEGAL HUD: No Divider, Larger Icons, Lower Position (YELLOW BOX FIX) */}
+            <div className="w-full grid grid-cols-3 items-center px-2">
                <div className="flex justify-start">
-                 <img src="/equal-housing.png" className="h-7 w-auto brightness-200 opacity-80" alt="HUD" />
+                 <img src="/equal-housing.png" className="h-10 w-auto brightness-200 opacity-80" alt="HUD" />
                </div>
 
                <div className="text-center">
-                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/90 drop-shadow-md">
+                 <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white whitespace-nowrap drop-shadow-md">
                    {profile.license_number}
                  </span>
                </div>
 
                <div className="flex justify-end">
                  <div className="flex flex-col items-center">
-                   <img src="/lynxx-footer.png" className="h-7 w-auto mb-1 brightness-[1.8] contrast-150" alt="agent Lynxx" />
-                   <div className="flex items-center gap-0.5 text-[7px] lowercase font-black text-[#00AEEF] tracking-tight">
+                   <img src="/lynxx-footer.png" className="h-10 w-auto mb-1 brightness-[1.8] contrast-150" alt="agent Lynxx" />
+                   <div className="flex items-center gap-0.5 text-[8px] lowercase font-black text-[#00AEEF] tracking-tight">
                       agent<span className="uppercase text-white opacity-40">Lynxx</span>
                    </div>
                  </div>
