@@ -7,12 +7,12 @@ import { trackEvent } from '@/app/actions/analytics';
 
 /** 
  * PIXEL-PERFECT OFFICIAL BRAND GEOMETRIES
- * Hand-coded SVGs to match Brandfetch and official brand guidelines.
+ * Verified SVG paths from Brandfetch official assets.
  */
 const ZillowIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    {/* The Official Z-House Silhouette */}
-    <path d="M12 2.1L1 12.1h3.2v9.8h6.5v-3.6l1.3-2 1.3 2v3.6h6.5v-9.8H23L12 2.1zm3.4 8.3L8 16.5v-2.7l4.1-4.1h3.3zm-3.4 5.4l-1.4-2.1h2.8l-1.4 2.1z" />
+    {/* OFFICIAL BRANDFETCH ZILLOW GEOMETRY */}
+    <path d="M18.498 11.196c0-.098-.098-.098-.098-.196l-5.782-5.291c-.294-.294-.784-.294-1.078 0l-5.782 5.29c-.098.098-.098.098-.098.197V18.94c0 .294.196.49.49.49h3.528c.098 0 .196-.098.294-.196l1.568-2.45c.098-.098.196-.196.392-.196.196 0 .294.098.392.196l1.568 2.45c0 .098.098.196.294.196h3.528c.294 0 .49-.196.49-.49v-7.744zM11.93 14.527l-1.274-1.96h2.548l-1.274 1.96zM14.968 10.02l-6.076 6.075V13.84l3.822-3.822h2.254z"/>
   </svg>
 );
 
@@ -84,10 +84,10 @@ export default function SplashPage({ profile }: { profile: any }) {
         </Script>
       )}
 
-      {/* DEVICE WRAPPER */}
+      {/* MOBILE CONTAINER */}
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-[0_0_120px_rgba(0,0,0,1)] md:rounded-[4.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden group">
         
-        {/* BG VIDEO */}
+        {/* VIDEO BACKGROUND */}
         <div className="absolute inset-0 z-0">
           {profile.video_bg_url && (
             <video autoPlay muted loop playsInline key={profile.video_bg_url} className="h-full w-full object-cover opacity-60 contrast-125 brightness-[0.55]">
@@ -98,17 +98,21 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-95" />
         </div>
 
-        {/* IDENTITY AREA */}
+        {/* IDENTITY HEADER */}
         <div className="relative z-30 w-full px-8 pt-16 flex flex-col items-center text-center">
             {profile.company_logo && (
-              <img src={profile.company_logo} className="h-12 w-auto object-contain mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,1)]" alt="Logo" />
+              <img 
+                src={profile.company_logo} 
+                className="h-12 w-auto object-contain mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,1)]" 
+                alt="Brokerage" 
+              />
             )}
             
             <h1 className="text-4xl font-extralight tracking-tighter text-white drop-shadow-[0_2px_15px_rgba(0,0,0,1)] mb-10">
               {profile.agent_name}
             </h1>
             
-            {/* FLOATING ICONS (No box) */}
+            {/* FLOATING SOCIAL ICONS (No box) */}
             <div className="flex justify-center gap-10 py-2">
                {profile.social_links && Object.entries(profile.social_links).map(([platform, url]) => {
                  const Config = SOCIAL_MAP[platform];
@@ -120,7 +124,7 @@ export default function SplashPage({ profile }: { profile: any }) {
                      target="_blank" 
                      className="transition-all duration-300 text-white/80 hover:text-[#00AEEF] hover:scale-125 hover:drop-shadow-[0_0_15px_rgba(0,174,239,0.5)]"
                    >
-                     <Config.icon className="w-6.5 h-6.5" />
+                     <Config.icon className="w-7 h-7" />
                    </a>
                  );
                })}
@@ -142,7 +146,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           )}
         </div>
 
-        {/* INTERACTION FOOTER */}
+        {/* DOCK & FOOTER */}
         <div className="relative z-30 mt-auto w-full px-8 pb-12 pt-32 flex flex-col items-center">
             
             <a 
@@ -159,11 +163,13 @@ export default function SplashPage({ profile }: { profile: any }) {
                <div className="flex justify-start">
                  <img src="/equal-housing.png" className="h-7 w-auto brightness-200 opacity-80" alt="HUD" />
                </div>
+
                <div className="text-center">
                  <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/90 drop-shadow-md">
                    {profile.license_number}
                  </span>
                </div>
+
                <div className="flex justify-end">
                  <div className="flex flex-col items-center">
                    <img src="/lynxx-footer.png" className="h-7 w-auto mb-1 brightness-[1.8] contrast-150" alt="agent Lynxx" />
