@@ -32,7 +32,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${profile.google_analytics_id}`} strategy="afterInteractive" />
           <Script id="google-analytics" strategy="afterInteractive">
             {`
-              window.dataLayer = window.dataLayer || [];
+              window.dataLayer = window.dataLayer ||[];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', '${profile.google_analytics_id}');
@@ -62,15 +62,17 @@ export default function SplashPage({ profile }: { profile: any }) {
               <source src={profile.video_bg_url} type="video/mp4" />
             </video>
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-transparent to-black" />
+          {/* Gradients to ensure text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-transparent to-black" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-95" />
         </div>
 
         {/* 1. TOP ZONE: IDENTITY (Fixed at top) */}
-        <header className="relative z-30 w-full px-8 pt-12 flex flex-col items-center text-center shrink-0">
+        <header className="relative z-30 w-full px-8 pt-16 flex flex-col items-center text-center shrink-0">
             {profile.company_logo && (
               <img 
                 src={profile.company_logo} 
-                className="h-16 w-auto object-contain mb-4 drop-shadow-[0_15px_30px_rgba(0,0,0,1)]" 
+                className="h-16 w-auto object-contain mb-5 drop-shadow-[0_15px_30px_rgba(0,0,0,1)]" 
                 alt="Brokerage" 
               />
             )}
@@ -79,8 +81,8 @@ export default function SplashPage({ profile }: { profile: any }) {
               {profile.agent_name}
             </h1>
             
-            {/* SOCIAL ICONS: CSS MASKED FOR PURITY */}
-            <div className="flex justify-center items-center gap-8 py-2">
+            {/* SOCIAL ICONS: CSS MASKED (Pure White, No Boxes) */}
+            <div className="flex justify-center items-center gap-10 py-2">
                {profile.social_links && Object.entries(profile.social_links).map(([platform, url]) => {
                  const Config = SOCIAL_CONFIG[platform];
                  if (!url) return null;
@@ -98,9 +100,11 @@ export default function SplashPage({ profile }: { profile: any }) {
                             WebkitMaskImage: `url('/icons/${platform}.svg')`,
                             maskRepeat: 'no-repeat',
                             WebkitMaskRepeat: 'no-repeat',
+                            maskPosition: 'center',
+                            WebkitMaskPosition: 'center',
                             maskSize: 'contain',
                             WebkitMaskSize: 'contain',
-                            backgroundColor: 'rgba(255,255,255,0.85)',
+                            backgroundColor: '#FFFFFF', // Forces pure white base, prevents generic squares
                             '--hover-color': Config?.color || '#00AEEF'
                         } as any}
                         className="w-7 h-7 transition-colors duration-300 group-hover/icon:!bg-[var(--hover-color)]"
@@ -111,42 +115,36 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </header>
 
-        {/* 2. MIDDLE ZONE: AVATAR (Takes remaining space, guaranteed below header) */}
-        <main className="relative z-10 flex-grow flex items-end justify-center min-h-0 w-full px-4">
-          <div className="w-full h-full flex flex-col justify-end">
+        {/* 2. MIDDLE ZONE: AVATAR (HARD CEILING AT 38% DOWN THE SCREEN) */}
+        <main className="absolute inset-x-0 top-[38%] bottom-0 z-10 pointer-events-none flex justify-center overflow-hidden">
             {profile.avatar_url && (
-              <div 
-                className="w-full aspect-[5/6] relative overflow-visible"
+              <img 
+                src={profile.avatar_url} 
+                className="w-full h-auto aspect-[5/6] object-cover object-top origin-top transition-transform duration-1000 group-hover:scale-[1.05]"
                 style={{ 
-                  maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 100%)', 
-                  WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 100%)' 
+                  maskImage: 'linear-gradient(to top, transparent 0%, black 20%, black 100%)', 
+                  WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 20%, black 100%)' 
                 }}
-              >
-                <img 
-                  src={profile.avatar_url} 
-                  className="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105 group-hover:brightness-110"
-                  alt="" 
-                />
-              </div>
+                alt="" 
+              />
             )}
-          </div>
         </main>
 
-        {/* 3. BOTTOM ZONE: ACTION & HUD (Fixed at bottom) */}
-        <footer className="relative z-30 w-full px-8 pb-10 flex flex-col items-center shrink-0 bg-gradient-to-t from-black via-black/80 to-transparent pt-12">
+        {/* 3. BOTTOM ZONE: ACTION & HUD (Fixed at bottom over avatar) */}
+        <footer className="relative z-30 mt-auto w-full px-8 pb-12 pt-32 flex flex-col items-center">
             
-            {/* CTA BUTTON: Guatemalan Blue Hover */}
+            {/* CTA BUTTON: Guatemalan Blue Hover, White Text */}
             <a 
               href={getCtaHref(profile.cta_url)} 
               onClick={() => trackEvent(profile.id, 'click')}
-              className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2rem] text-[16px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-500 uppercase tracking-[0.3em] mb-12 shadow-[0_20px_50px_rgba(0,0,0,0.6)] active:scale-95"
+              className="group flex items-center justify-center gap-3 w-full py-5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[16px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-500 uppercase tracking-[0.35em] mb-14 shadow-[0_25px_60px_rgba(0,0,0,0.6)] active:scale-95"
             >
               <span className="drop-shadow-lg">{profile.cta_text || 'Contact Me'}</span>
               <ExternalLink className="w-4 h-4 opacity-25 group-hover:opacity-100 transition-opacity" />
             </a>
 
             {/* LEGAL HUD */}
-            <div className="w-full grid grid-cols-3 items-center px-2 pt-6 border-t border-white/[0.05]">
+            <div className="w-full grid grid-cols-3 items-center px-2 pt-8 border-t border-white/[0.05]">
                <div className="flex justify-start">
                  <img src="/equal-housing.png" className="h-7 w-auto brightness-200 opacity-80" alt="HUD" />
                </div>
