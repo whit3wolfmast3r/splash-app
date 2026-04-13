@@ -3,6 +3,37 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+export async function removeBackground(formData: FormData) {
+  const file = formData.get('image') as File
+  if (!file) return { error: 'No image provided' }
+
+  const apiKey = process.env.REMOVE_BG_API_KEY
+  if (!apiKey) return { error: 'API Key not configured' }
+
+  try {
+    const removeBgFormData = new FormData()
+    removeBgFormData.append('image_file', file)
+    removeBgFormData.append('size', 'auto')
+
+    const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+      method: 'POST',
+      headers: { 'X-Api-Key': apiKey },
+      body: removeBgFormData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.errors?.[0]?.title || 'Failed to remove background')
+    }
+
+    const arrayBuffer = await response.arrayBuffer()
+    const base64 = Buffer.from(arrayBuffer).toString('base64')
+    return { data: `data:image/png;base64,${base64}` }
+  } catch (err: any) {
+    return { error: err.message }
+  }
+}
+
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -45,7 +76,6 @@ export async function updateProfile(formData: FormData) {
         cta_text: formData.get('cta_text'),
         cta_url: formData.get('cta_url'),
         video_bg_url: formData.get('video_bg_url'),
-        // NEW ANALYTICS FIELDS
         google_analytics_id: formData.get('google_analytics_id'),
         clarity_id: formData.get('clarity_id'),
         avatar_url,
