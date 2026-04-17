@@ -41,7 +41,7 @@ export default function SplashPage({ profile }: { profile: any }) {
         </Script>
       )}
 
-      {/* MOBILE DEVICE CONTAINER */}
+      {/* VIEWPORT */}
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-[0_0_120px_rgba(0,0,0,1)] md:rounded-[4.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden group">
         
         {/* VIDEO BACKGROUND */}
@@ -61,7 +61,8 @@ export default function SplashPage({ profile }: { profile: any }) {
               <img src={profile.company_logo} className="h-16 w-auto object-contain mb-4 drop-shadow-[0_15px_30px_rgba(0,0,0,1)]" alt="Logo" />
             )}
             
-            <h1 className="text-4xl font-extralight tracking-tight text-white drop-shadow-2xl mb-8 uppercase">
+            {/* FIXED: Removed uppercase. Respects mixed-case input. */}
+            <h1 className="text-4xl font-extralight tracking-tight text-white drop-shadow-2xl mb-8">
               {profile.agent_name}
             </h1>
             
@@ -81,7 +82,7 @@ export default function SplashPage({ profile }: { profile: any }) {
                                maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat',
                                maskPosition: 'center', WebkitMaskPosition: 'center',
                                maskSize: 'contain', WebkitMaskSize: 'contain',
-                               backgroundColor: 'rgba(255,255,255,0.9)', // Higher base visibility
+                               backgroundColor: 'rgba(255,255,255,0.9)', 
                                '--hover-color': Config?.color || BRAND_BLUE
                            } as any}
                            className="w-7 h-7 transition-colors duration-300 group-hover/icon:!bg-[var(--hover-color)]"
@@ -92,7 +93,7 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </header>
 
-        {/* 2. AVATAR (Anchored at bottom, 5:6 ratio) */}
+        {/* 2. AVATAR */}
         <main className="absolute inset-x-0 top-[30%] bottom-0 z-10 pointer-events-none flex justify-center overflow-hidden">
             {profile.avatar_url && (
               <img 
@@ -110,10 +111,11 @@ export default function SplashPage({ profile }: { profile: any }) {
         {/* 3. INTERACTION AREA */}
         <footer className="relative z-30 mt-auto w-full px-8 pb-4 flex flex-col items-center">
             
+            {/* FIXED: Removed uppercase. Respects mixed-case input. */}
             <a 
               href={getCtaHref(profile.cta_url)} 
               onClick={() => trackEvent(profile.id, 'click')}
-              className="group inline-flex items-center justify-center w-auto min-w-[76%] px-10 py-4 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[16px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-300 uppercase tracking-[0.3em] mb-8 shadow-2xl active:scale-95 whitespace-nowrap overflow-hidden"
+              className="group inline-flex items-center justify-center w-auto min-w-[76%] px-10 py-4 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[15px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-300 tracking-[0.3em] mb-8 shadow-2xl active:scale-95 whitespace-nowrap overflow-hidden"
             >
               <span className="drop-shadow-lg text-center">{profile.cta_text || 'Contact Me'}</span>
             </a>
@@ -124,14 +126,14 @@ export default function SplashPage({ profile }: { profile: any }) {
                </div>
 
                <div className="text-center">
-                 <span className="text-[12px] font-black uppercase tracking-[0.25em] text-white whitespace-nowrap drop-shadow-md">
+                 {/* FIXED: Removed uppercase. Respects mixed-case input. */}
+                 <span className="text-[12px] font-black tracking-[0.25em] text-white whitespace-nowrap drop-shadow-md">
                    {profile.license_number}
                  </span>
                </div>
 
                <div className="flex justify-end">
                  <div className="flex flex-col items-center">
-                   {/* Sync color for Cat Logo */}
                    <div 
                       style={{ 
                           maskImage: "url('/lynxx-footer.png')", 
