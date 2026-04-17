@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { updateProfile, removeBackground } from '@/app/dashboard/actions'
-import { Sparkles, Loader2, Building2, User, HelpCircle, ExternalLink, MousePointer2 } from 'lucide-react'
+import { Sparkles, Loader2, Building2, User, HelpCircle, Globe, LogOut, Eye, MousePointer2 } from 'lucide-react'
 
 const THEMES = [
   { name: 'Modern Estate', url: 'https://hprgwoywlihlqnniaktp.supabase.co/storage/v1/object/public/videos/video4.mp4' },
@@ -20,14 +20,14 @@ const CTA_TYPES = [
 
 const SOCIAL_KEYS = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow'];
 
-export default function DashboardForm({ profile }: any) {
+export default function DashboardForm({ profile, viewCount, clickCount }: any) {
   const [loading, setLoading] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [avatar, setAvatar] = useState(profile?.avatar_url)
+  const [logo, setLogo] = useState(profile?.company_logo)
   const [message, setMessage] = useState('')
   const [socialLinks, setSocialLinks] = useState(profile?.social_links || {});
 
-  // Determine initial CTA Type for display
   const [ctaType, setCtaType] = useState(
     profile?.cta_url?.startsWith('tel:') ? 'tel' : 
     profile?.cta_url?.startsWith('sms:') ? 'sms' : 
@@ -56,12 +56,10 @@ export default function DashboardForm({ profile }: any) {
   return (
     <form action={async (fd) => {
       setLoading(true);
-      // Process avatar if it's a new local crop
       if (avatar?.startsWith('data:image')) {
         const b = await fetch(avatar).then(r => r.blob())
         fd.set('headshot', new File([b], 'a.png', {type:'image/png'}))
       }
-      // Handle CTA prefix logic
       const rawUrl = fd.get('cta_url_raw') as string
       const cleanUrl = rawUrl?.replace(/^(tel:|sms:|mailto:)/, '').trim()
       fd.set('cta_url', ctaType === 'link' ? cleanUrl : `${ctaType}:${cleanUrl}`)
@@ -69,7 +67,12 @@ export default function DashboardForm({ profile }: any) {
       const res = await updateProfile(fd); 
       setMessage(res.error ? '❌ Error' : '✅ Links Updated!'); 
       setLoading(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }} className="space-y-12 pb-32">
+
+      {/* PERSISTENT ASSET URLS (The fix for lost images) */}
+      <input type="hidden" name="current_avatar_url" value={profile?.avatar_url || ''} />
+      <input type="hidden" name="current_company_logo" value={profile?.company_logo || ''} />
 
       {message && <div className="p-4 rounded-2xl text-center text-xs font-black uppercase bg-[#00AEEF] text-black fixed bottom-8 left-1/2 -translate-x-1/2 z-50 shadow-2xl animate-in fade-in slide-in-from-bottom-4">{message}</div>}
 
@@ -131,13 +134,13 @@ export default function DashboardForm({ profile }: any) {
               {avatar ? <img src={avatar} className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full italic text-zinc-800 text-[10px]">No Photo</div>}
               {processing && <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center"><Loader2 className="animate-spin text-[#00AEEF]"/></div>}
             </div>
-            <label className="cursor-pointer bg-white text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase hover:bg-[#00AEEF] transition-all">Upload Photo<input type="file" accept="image/*" className="hidden" onChange={e => {const f=e.target.files?.[0]; if(f) setAvatar(URL.createObjectURL(f))}} /></label>
+            <label className="cursor-pointer bg-white text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase hover:bg-[#00AEEF] transition-all">Choose Photo<input type="file" accept="image/*" className="hidden" onChange={e => {const f=e.target.files?.[0]; if(f) setAvatar(URL.createObjectURL(f))}} /></label>
             <button type="button" onClick={handleMagic} className="text-[#00AEEF] text-[9px] font-black uppercase flex items-center gap-1 mt-4 opacity-60 hover:opacity-100 transition-all"><Sparkles size={12} /> AI Background Removal (1 Free)</button>
         </div>
         <div className="bg-zinc-900/50 border border-white/5 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center">
             <p className="text-[9px] font-black uppercase text-zinc-500 tracking-widest mb-6">Brokerage Identity</p>
-            <div className="h-32 flex items-center mb-8">{profile?.company_logo ? <img src={profile.company_logo} className="max-h-20 w-auto opacity-80" /> : <Building2 className="text-zinc-800" />}</div>
-            <label className="cursor-pointer border border-white/10 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase hover:border-[#00AEEF] transition-all">Upload Logo<input type="file" name="company_logo_file" className="hidden" /></label>
+            <div className="h-32 flex items-center mb-8">{logo ? <img src={logo} className="max-h-20 w-auto opacity-80" /> : <Building2 className="text-zinc-800" />}</div>
+            <label className="cursor-pointer border border-white/10 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase hover:border-[#00AEEF] transition-all">Upload Office Logo<input type="file" name="company_logo_file" className="hidden" onChange={e => {const f=e.target.files?.[0]; if(f) setLogo(URL.createObjectURL(f))}} /></label>
         </div>
       </section>
 
@@ -171,7 +174,7 @@ export default function DashboardForm({ profile }: any) {
         </div>
         <label className="flex items-center gap-4 cursor-pointer bg-black/60 p-6 rounded-3xl border border-white/5 hover:border-[#00AEEF]/30 transition-all">
           <input type="checkbox" name="needs_help_tracking" defaultChecked={profile?.needs_help_tracking} className="w-6 h-6 accent-[#00AEEF]" />
-          <div><p className="text-[11px] font-black uppercase text-white">Help me set this up</p><p className="text-[9px] text-zinc-500 uppercase font-bold mt-1">Our concierges will reach out to finish your setup for free.</p></div>
+          <div><p className="text-[11px] font-black uppercase text-white">I need help setting this up</p><p className="text-[9px] text-zinc-500 uppercase font-bold mt-1">Our team will reach out to finish your setup for free.</p></div>
         </label>
       </section>
 
