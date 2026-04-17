@@ -5,29 +5,24 @@ import { revalidatePath } from 'next/cache'
 
 export async function removeBackground(formData: FormData) {
   const file = formData.get('image') as File
-  if (!file) return { error: 'No image provided' }
-
   const apiKey = process.env.REMOVE_BG_API_KEY
-  if (!apiKey) return { error: 'API Key not configured' }
+  if (!apiKey) return { error: 'API Key not configured on server' }
 
   try {
-    const removeBgFormData = new FormData()
-    removeBgFormData.append('image_file', file)
-    removeBgFormData.append('size', 'auto')
+    const rbFormData = new FormData()
+    rbFormData.append('image_file', file)
+    rbFormData.append('size', 'auto')
 
-    const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+    const res = await fetch('https://api.remove.bg/v1.0/removebg', {
       method: 'POST',
       headers: { 'X-Api-Key': apiKey },
-      body: removeBgFormData,
+      body: rbFormData,
     })
 
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.errors?.[0]?.title || 'Failed to remove background')
-    }
+    if (!res.ok) throw new Error('Remove.bg API failed')
 
-    const arrayBuffer = await response.arrayBuffer()
-    const base64 = Buffer.from(arrayBuffer).toString('base64')
+    const buffer = await res.arrayBuffer()
+    const base64 = Buffer.from(buffer).toString('base64')
     return { data: `data:image/png;base64,${base64}` }
   } catch (err: any) {
     return { error: err.message }
@@ -39,32 +34,27 @@ export async function updateProfile(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  let avatar_url = formData.get('current_avatar_url') as string
-  let company_logo = formData.get('current_company_logo') as string
+  // Important: Grab the existing URLs from hidden fields
+  const currentAvatar = formData.get('current_avatar_url') as string
+  const currentLogo = formData.get('current_company_logo') as string
 
-  const uploadAsset = async (file: File, bucket: string) => {
-    if (!file || file.size === 0 || file.name === 'undefined') return null
+  const uploadFile = async (file: File, bucket: string) => {
+    if (!file || file.size === 0 || typeof file === 'string' || file.name === 'undefined') return null
     const name = `${user.id}/${Date.now()}-${file.name.replace(/\s/g, '_')}`
-    const { error } = await supabase.storage.from(bucket).upload(name, file, { upsert: true })
-    if (error) throw error
+    const { error } = await supabase.storage.from(bucket).upload(name, file)
+    if (error) return null
     return supabase.storage.from(bucket).getPublicUrl(name).data.publicUrl
   }
 
   try {
-    const headshotFile = formData.get('headshot') as File
-    const logoFile = formData.get('company_logo_file') as File
+    const newAvatar = await uploadFile(formData.get('headshot') as File, 'avatars')
+    const newLogo = await uploadFile(formData.get('company_logo_file') as File, 'logos')
 
-    const newAvatar = await uploadAsset(headshotFile, 'avatars')
-    if (newAvatar) avatar_url = newAvatar
-
-    const newLogo = await uploadAsset(logoFile, 'logos') 
-    if (newLogo) company_logo = newLogo
-
-    const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow', 'wechat']
     const social_links: any = {}
-    networks.forEach(net => {
-      const val = formData.get(`social_${net}`)
-      if (val) social_links[net] = val
+    const networks = ['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'whatsapp', 'zillow']
+    networks.forEach(n => {
+      const val = formData.get(`social_${n}`)
+      if (val) social_links[n] = val
     })
 
     const { error: dbError } = await supabase
@@ -78,17 +68,16 @@ export async function updateProfile(formData: FormData) {
         video_bg_url: formData.get('video_bg_url'),
         google_analytics_id: formData.get('google_analytics_id'),
         clarity_id: formData.get('clarity_id'),
-        avatar_url,
-        company_logo,
+        needs_help_tracking: formData.get('needs_help_tracking') === 'on',
+        avatar_url: newAvatar || currentAvatar, // Fallback to old if new fails
+        company_logo: newLogo || currentLogo,
         social_links,
         updated_at: new Date().toISOString()
       })
       .eq('id', user.id)
 
     if (dbError) throw dbError
-
     revalidatePath('/dashboard')
-    revalidatePath(`/${formData.get('username')}`)
     return { success: true }
   } catch (err: any) {
     return { error: err.message }
