@@ -4,8 +4,18 @@ import React from 'react';
 import Script from 'next/script';
 import { trackEvent } from '@/app/actions/analytics';
 
-// THE SOURCE OF TRUTH FOR BRANDING
 const BRAND_BLUE = '#00AEEF'; 
+
+// The specific order you want icons to appear in if they are filled out
+const SOCIAL_ORDER = [
+  'instagram', 
+  'facebook', 
+  'tiktok', 
+  'youtube', 
+  'linkedin', 
+  'whatsapp', 
+  'zillow'
+];
 
 const SOCIAL_CONFIG: Record<string, { color: string }> = {
   instagram: { color: '#E4405F' },
@@ -14,8 +24,7 @@ const SOCIAL_CONFIG: Record<string, { color: string }> = {
   youtube: { color: '#FF0000' },
   linkedin: { color: '#0077B5' },
   whatsapp: { color: '#25D366' },
-  zillow: { color: '#006AFF' },
-  wechat: { color: '#07C160' }
+  zillow: { color: '#006AFF' }
 };
 
 export default function SplashPage({ profile }: { profile: any }) {
@@ -33,28 +42,17 @@ export default function SplashPage({ profile }: { profile: any }) {
         <>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${profile.google_analytics_id}`} strategy="afterInteractive" />
           <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${profile.google_analytics_id}');
-            `}
+            {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${profile.google_analytics_id}');`}
           </Script>
         </>
       )}
       {profile.clarity_id && (
         <Script id="ms-clarity" strategy="afterInteractive">
-          {`
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "${profile.clarity_id}");
-          `}
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}; t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i; y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y); })(window, document, "clarity", "script", "${profile.clarity_id}");`}
         </Script>
       )}
 
-      {/* MAIN VIEWPORT */}
+      {/* MAIN VIEWPORT WRAPPER */}
       <div className="relative h-screen md:h-[850px] w-full max-w-[430px] flex flex-col text-white shadow-[0_0_120px_rgba(0,0,0,1)] md:rounded-[4.5rem] border-0 md:border-[12px] border-zinc-900 bg-black overflow-hidden group">
         
         {/* VIDEO BACKGROUND */}
@@ -68,7 +66,7 @@ export default function SplashPage({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
         </div>
 
-        {/* 1. HEADER */}
+        {/* 1. HEADER: BRANDING & IDENTITY */}
         <header className="relative z-30 w-full px-8 pt-8 flex flex-col items-center text-center shrink-0">
             {profile.company_logo && (
               <img 
@@ -82,30 +80,28 @@ export default function SplashPage({ profile }: { profile: any }) {
               {profile.agent_name}
             </h1>
             
-            {/* SOCIAL ICONS: FILTERED TO TOP 4 ONLY */}
+            {/* SOCIAL ICONS: DETERMINISTIC ORDER & LIMIT OF 4 */}
             <div className="flex justify-center items-center gap-10 py-2">
-               {profile.social_links && Object.entries(profile.social_links)
-                 .filter(([_, url]) => !!url) // Only show icons that have a URL saved
-                 .slice(0, 4)                // HARD LIMIT: Maximum 4 icons
-                 .map(([platform, url]) => {
-                    const Config = SOCIAL_CONFIG[platform];
+               {SOCIAL_ORDER
+                 .filter(key => !!profile.social_links?.[key]) // Only if link exists
+                 .slice(0, 4) // HARD LIMIT: First 4 only
+                 .map((key) => {
+                    const Config = SOCIAL_CONFIG[key];
+                    const url = profile.social_links[key];
                     return (
                       <a 
-                        key={platform} 
+                        key={key} 
                         href={url as string} 
                         target="_blank" 
                         className="group/icon transition-all duration-300 hover:scale-125 hover:drop-shadow-[0_0_12px_rgba(0,174,239,0.5)]"
                       >
                         <div 
                            style={{ 
-                               maskImage: `url('/icons/${platform}.svg')`, 
-                               WebkitMaskImage: `url('/icons/${platform}.svg')`,
-                               maskRepeat: 'no-repeat',
-                               WebkitMaskRepeat: 'no-repeat',
-                               maskPosition: 'center',
-                               WebkitMaskPosition: 'center',
-                               maskSize: 'contain',
-                               WebkitMaskSize: 'contain',
+                               maskImage: `url('/icons/${key}.svg')`, 
+                               WebkitMaskImage: `url('/icons/${key}.svg')`,
+                               maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat',
+                               maskPosition: 'center', WebkitMaskPosition: 'center',
+                               maskSize: 'contain', WebkitMaskSize: 'contain',
                                backgroundColor: '#FFFFFF',
                                '--hover-color': Config?.color || BRAND_BLUE
                            } as any}
@@ -117,7 +113,7 @@ export default function SplashPage({ profile }: { profile: any }) {
             </div>
         </header>
 
-        {/* 2. AVATAR */}
+        {/* 2. AVATAR: 5:6 RATIO WITH AGGRESSIVE BOTTOM FADE */}
         <main className="absolute inset-x-0 top-[30%] bottom-0 z-10 pointer-events-none flex justify-center overflow-hidden">
             {profile.avatar_url && (
               <img 
@@ -132,48 +128,46 @@ export default function SplashPage({ profile }: { profile: any }) {
             )}
         </main>
 
-        {/* 3. FOOTER & ACTION */}
+        {/* 3. FOOTER: CTA & LEGAL HUD */}
         <footer className="relative z-30 mt-auto w-full px-8 pb-4 flex flex-col items-center">
             
-            {/* CTA BUTTON: Guatemalan Blue & Centered */}
+            {/* CTA BUTTON: Guatemalan Blue Hover, Centered, No Icon, Single Line */}
             <a 
               href={getCtaHref(profile.cta_url)} 
               onClick={() => trackEvent(profile.id, 'click')}
-              className="group inline-flex items-center justify-center w-auto min-w-[80%] px-10 py-4.5 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[16px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-300 uppercase tracking-[0.3em] mb-8 shadow-[0_25px_60px_rgba(0,0,0,0.6)] active:scale-95 whitespace-nowrap overflow-hidden"
+              className="group inline-flex items-center justify-center w-auto min-w-[76%] px-10 py-4 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] text-[15px] font-black text-white hover:bg-[#00AEEF] hover:border-[#00AEEF] transition-all duration-300 uppercase tracking-[0.3em] mb-8 shadow-[0_25px_60px_rgba(0,0,0,0.6)] active:scale-95 whitespace-nowrap overflow-hidden"
             >
               <span className="drop-shadow-lg text-center">{profile.cta_text || 'Contact Me'}</span>
             </a>
 
-            {/* LEGAL HUD: Larger & Color Matched */}
+            {/* LEGAL HUD: Larger Icons, Lower Position, No Divider */}
             <div className="w-full grid grid-cols-3 items-center px-2 pb-2">
                <div className="flex justify-start">
                  <img src="/equal-housing.png" className="h-10 w-auto brightness-200 opacity-90" alt="HUD" />
                </div>
 
                <div className="text-center">
-                 <span className="text-[12px] font-black uppercase tracking-[0.25em] text-white whitespace-nowrap drop-shadow-md">
+                 <span className="text-[11px] font-black uppercase tracking-[0.25em] text-white whitespace-nowrap drop-shadow-md">
                    {profile.license_number}
                  </span>
                </div>
 
                <div className="flex justify-end">
                  <div className="flex flex-col items-center">
-                   {/* FIXED: Color-matched Cat Logo via Masking */}
+                   {/* Brand Color Matched Logo via Masking */}
                    <div 
                       style={{ 
                           maskImage: "url('/lynxx-footer.png')", 
                           WebkitMaskImage: "url('/lynxx-footer.png')",
-                          maskRepeat: 'no-repeat',
-                          WebkitMaskRepeat: 'no-repeat',
-                          maskSize: 'contain',
-                          WebkitMaskSize: 'contain',
+                          maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat',
+                          maskSize: 'contain', WebkitMaskSize: 'contain',
                           backgroundColor: BRAND_BLUE
                       }}
                       className="h-10 w-10 mb-1" 
                    />
                    <div className="flex items-center gap-0.5 text-[9px] lowercase font-black tracking-tight">
                       <span className="text-white opacity-60">agent</span>
-                      <span style={{ color: BRAND_BLUE }}>LYNXX</span>
+                      <span style={{ color: BRAND_BLUE }}>lynxx</span>
                    </div>
                  </div>
                </div>
